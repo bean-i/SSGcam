@@ -9,16 +9,13 @@ router.get('/makeCall', (req, res) => {
     client.calls.create({
         to: toNumber,
         from: fromNumber,
-        url: 'https://97f6-115-91-214-4.ngrok-free.app/incomingCall' // 수정된 URL에 맞게 변경하세요.
-    })
-    .then(call => {
-        console.log('Outgoing call made!');
-        console.log('To:', toNumber);
-        console.log('From:', fromNumber);
-        console.log('Call SID:', call.sid);
+        // url: 'https://97f6-115-91-214-4.ngrok-free.app/incomingCall',
+        url: 'https://handler.twilio.com/twiml/EHa0aa9b3f03d72b22dbb5d3cfa96eb112', //twiml bin 사용
+        record: true
+    }).then(call => {
+        console.log(`Calling to ${toNumber}... Call SID: ${call.sid}`);
         res.send(`Calling to ${toNumber}... Call SID: ${call.sid}`);
-    })
-    .catch(err => {
+    }).catch(err => {
         console.error(err);
         res.status(500).send(err.message);
     });
