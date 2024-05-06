@@ -1,28 +1,13 @@
 package com.example.front;
 
-import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.twilio.voice.CallException;
-import com.twilio.voice.CallInvite;
-import com.twilio.voice.CancelledCallInvite;
-import com.twilio.voice.MessageListener;
-import com.twilio.voice.Voice;
-import com.example.front.Constants;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import io.flutter.embedding.android.FlutterActivity;
 
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -35,47 +20,29 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
+
         Log.d(TAG, "Received onMessageReceived()");
         Log.d(TAG, "Bundle data: " + remoteMessage.getData());
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
 
-        // Check if the message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-
-
-//             아니 왜 valid 하지 않은거야 진짜아
-//            boolean valid = Voice.handleMessage(this, remoteMessage.getData(), new MessageListener() {
-//                @Override
-//                public void onCallInvite(@NonNull CallInvite callInvite) {
-//                    final int notificationId = (int) System.currentTimeMillis();
-////                    handleInvite(callInvite, notificationId);
-//                }
-//
-//                @Override
-//                public void onCancelledCallInvite(@NonNull CancelledCallInvite cancelledCallInvite, @Nullable CallException callException) {
-////                    handleCanceledCallInvite(cancelledCallInvite);
-//                }
-//            });
-//
-//            if (!valid) {
-//                Log.e(TAG, "The message was not a valid Twilio Voice SDK payload: " +
-//                        remoteMessage.getData());
-//            }
-
-
-
-            // 스스로 짜자
-            String callStatus = remoteMessage.getData().get("CallStatus");
-
-            if("ringing".equals(callStatus)) {
-                Log.d(TAG, "전화옴");
-                // flutter 로 전화 수신 ui 띄우기
+        // 메인 스레드에서 처리하기 위해 Handler 사용
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (remoteMessage.getNotification() != null) {
+                    String callStatus = remoteMessage.getData().get("CallStatus");
+                    if ("ringing".equals(callStatus)) {
+                        Log.d(TAG, "전화옴");
+                        EventChannelManager.getInstance().sendEventToFlutter("ringing");
+                    }
+                }
             }
-
-        }
+        });
     }
 
+    // 데이터 형번환
 //    private static Map<String, String> formatToMap(Map<String, String> data) {
 //        Map<String, String> resultMap = new HashMap<>();
 //
