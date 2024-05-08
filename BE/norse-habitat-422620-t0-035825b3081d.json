@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "norse-habitat-422620-t0",
+  "private_key_id": "035825b3081df289ff349760bb4a48c4964428a1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCpV5dbACOrsPwk\nEgp3+RoCZsRSN9ODFofmxnA3KlknOGciDjsi2XfUdR9wy6mX92e8eNGPgqxIhV+x\neqeE1o70wl4Kjp66XNPDoNP/3icpWsPrkL7N86vq/04iUSL1Oy2+ttzk5ritCWeq\ncE+M+0f6ABGTjwYc02/C9fZ8qMXA6Uuw8UthYe3e/jMBMl5ha+kH77A/jMci0iwA\nx96VxMbq3a4OP4FYTOaz8M5FSoZ+OjUbgoGq7YbLH4uu1IWmWsBqUoDMfcaQZhS3\nRequE+s5Nbs3ogI4ibZfkV2ue4XTJRNe2TzzNZ4cKco9NRW4jQKMIfjCDTNDRnqo\nIhqWFv4pAgMBAAECggEAALF94hXXQVMnvsDp5YWcgcCCnD5X9JUVCtyXqqxgbTK1\nq4lUntGxnjqYWN5Lj8S2HKheT4C6nkYr9wIHzRcIpjryylegdVqGJWXMSxLwQ66u\n0Ee7JXGzpwUvhSBktllqx7l59cYlWc8zhUK5n55D8e0ZiODb7dD4R8+X+Wq0aAzj\nDUHRN7xQzOpoD6+RxJtwwymVezfStg+usWqWFfQ2p4Ee55zs/8Ne04U3o4y/c8jR\nWW+PKJyH4wNM/B78GM8m1qOcJlriYuMRQkqAkWyYSl3kcvD+has++tSbrQYdzalG\nwnSvNx4MW38fQrAK0zvXFz+3tOlLCAa6mp1DmV1D4QKBgQDutZ6LXZlw0fbKEWkK\nad0ovEKK7gu9JPOF8CUINdspXE2u4ETldFZBUAkbgVYuB9zis3T/fN3j3qQuCBmD\n/dbkpH/xbXz0OPvf7QztmKsxwIrxTxqQ7poJeuYHIXyrx7ftwK9ROBEwrncXFAkO\n7yCyaZvLDsJo5XasmICQxvq3WQKBgQC1m7JXEdLp2/iC5mdb6Ht3pNfTsh9XQg4F\ncIuREarKdtQET12BJXxniGsjK51PqM4cNyWPzFFc6rsGkeKB3jxf2JUFTYhICvTt\nqUdj0ofRhw0TH7vaoOp9P84chJ/tc/ia5ahW+GbfzbCigTbPNsD1tGfijycMxqcJ\nFtC2HNZzUQKBgDkpyPO60FnSDfVJwgu6Wjm9C3pVkv4ScTar0VJsAzWeYwPztMv1\n1goB7oxlpouTWnP3YZclAcXltQ9I5UNUcDeEpRbdj0S0uKxhCe2D18ssPpmWxdfb\nK4wFoDwo6sAALa2DrPgYIxWzUdV2+MxYu02+OI6h1DBmcsrWIkOJQtTRAoGAaksE\nqL1/6uyamVLtb/e0PCS5RehdO58nwbtLlM74XaQLF7K0EaC1HYvU2TLv0e4FJLKK\nQ43cmTux13iPUF+YiqijIAVvHGt9S5TmeeCBKfuXhXfvZVkFpeUwZ7SgPkTAXzjH\nvI+K9rbXCWYDhGiRq725h/staebjYQh/g/eA9OECgYEA5YVsibLR6dfXhfy4N2yp\nXcWEnM+o3/ECHln9kln82gCjGHSIFSUp4OcMvq99PZoYCQTE+CpdzGC359MtXgrE\n2YlN9ciwGKHG+0Q6Q18RuNJg3NDblMbL6n588ZEPMCE99BjtwL+nJNbb/J/LlrPZ\nHNBVYYcFD0Vu+0oxHK2ZmLs=\n-----END PRIVATE KEY-----\n",
+  "client_email": "scam-359@norse-habitat-422620-t0.iam.gserviceaccount.com",
+  "client_id": "115002122447932124780",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/scam-359%40norse-habitat-422620-t0.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
