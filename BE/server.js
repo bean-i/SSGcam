@@ -82,6 +82,9 @@ function setupRecognizeStream() {
 wss.on('connection', function connection(ws) {
     console.log("New Connection Initiated");
 
+    // 클라이언트에게 단 한 번만 환영 메시지 보내기
+    ws.send('Welcome to our WebSocket server!');
+
     setupRecognizeStream();  // 연결 시 스트림 설정
         
     ws.on('message', function incoming(message) {
