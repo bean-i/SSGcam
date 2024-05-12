@@ -1,82 +1,83 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
-import 'package:flutter_callkit_incoming/entities/ios_params.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
-import 'package:uuid/uuid.dart';
+import 'package:flutter/cupertino.dart';
+import 'screens/home_screen.dart';
+import 'screens/search_screen.dart';
+import 'screens/record_screen.dart';
+import 'screens/chat_screen.dart';
+import 'screens/profile_screen.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Sample App',
+      home: MainScreen(),
+    );
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  late FirebaseMessaging messaging;
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    initializeFirebaseMessaging();
-  }
+  // ignore: library_private_types_in_public_api
+  _MainScreenState createState() => _MainScreenState();
+}
 
-  void initializeFirebaseMessaging() {
-    messaging = FirebaseMessaging.instance;
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      _handleMessage(message);
-    });
-  }
-
-  static Future<void> _firebaseMessagingBackgroundHandler(
-      RemoteMessage message) async {
-    print('Handling a background message: ${message.messageId}');
-  }
-
-  void _handleMessage(RemoteMessage message) {
-    if (message.data.containsKey('fromNumber')) {
-      final String fromNumber = message.data['fromNumber'];
-      showCallkitIncoming(fromNumber);
-    }
-  }
-
-  Future<void> showCallkitIncoming(String fromNumber) async {
-    final String uuid = const Uuid().v4();
-    await FlutterCallkitIncoming.showCallkitIncoming(CallKitParams(
-      id: uuid,
-      nameCaller: 'Unknown',
-      appName: 'MyApp',
-      handle: fromNumber,
-      type: 0, // 0 for audio call
-      duration: 30000,
-      textAccept: 'Accept',
-      textDecline: 'Decline',
-      ios: const IOSParams(
-        iconName: 'CallKitLogo',
-        supportsVideo: false,
-        maximumCallGroups: 1,
-        maximumCallsPerCallGroup: 1,
-        ringtonePath: 'system_ringtone_default',
-      ),
-    ));
-  }
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Incoming Call')),
-        body: const Center(child: Text('Hi, Waiting for incoming calls...')),
+    return Scaffold(
+      // appBar: AppBar(title: const Text('Main Screen')),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: const [
+          HomeScreen(),
+          SearchScreen(),
+          RecordScreen(),
+          ChatScreen(),
+          ProfileScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: _selectedIndex,
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: '홈'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.search_outlined),
+              activeIcon: Icon(Icons.search),
+              label: '검색'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.add_circle_outline),
+              activeIcon: Icon(Icons.add_circle),
+              label: '기록'),
+          BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.chat_bubble),
+              activeIcon: Icon(CupertinoIcons.chat_bubble_fill),
+              label: '챗봇'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: '프로필'),
+        ],
       ),
     );
   }
