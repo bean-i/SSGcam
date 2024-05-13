@@ -23,16 +23,25 @@ app.get('/', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    const user = new User(req.body)
+    const { password, confirmPassword } = req.body;
 
-    user.save().then(()=>{
+    if (password !== confirmPassword) {
+        return res.status(400).json({
+            success: false,
+            message: "비밀번호가 일치하지 않습니다."
+        });
+    }
+    const user = new User(req.body);
+
+    user.save().then(() => {
         res.status(200).json({
-            success:true
-        })
-    }).catch((err)=>{
-        return res.json({success:false, err})
-    })
-})
+            success: true
+        });
+    }).catch((err) => {
+        return res.status(500).json({ success: false, err });
+    });
+});
+
 
 app.post('/api/users/login', (req, res) => {
   User.findOne({
