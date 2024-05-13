@@ -7,7 +7,7 @@ const client = require('twilio')(accountSid, authToken);
 
 client.calls
       .create({
-         twiml: '<Response><Say>Ahoy, World!</Say></Response>',
+         twiml: '<Response><Say>안녕!</Say></Response>',
          to: '+821035107029',
          from: '+15093687091'
        })

@@ -64,9 +64,8 @@ app.post('/voice', (req, res) => {
 
       const twiml = `<?xml version="1.0" encoding="UTF-8"?>
                     <Response>
-                      <Stream url='wss://3d0f-175-192-51-218.ngrok-free.app'>
-                      </Stream>
                       <Say language="ko-KR" voice="Polly.Seoyeon">안녕하세요, 스윽캠입니다!</Say>
+                      <Dial>+821035107029</Dial>
                     </Response>`;
     
                     // Dial 태그 추가하기
