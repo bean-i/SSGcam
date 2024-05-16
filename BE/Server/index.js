@@ -23,9 +23,9 @@ app.get('/', (req, res) => {
 })
 
 app.post('/register', (req, res) => {
-    const { password, confirmPassword } = req.body;
+    const { user_pw, user_pw_confirm } = req.body;
 
-    if (password !== confirmPassword) {
+    if (user_pw !== user_pw_confirm) {
         return res.status(400).json({
             success: false,
             message: "비밀번호가 일치하지 않습니다."
@@ -45,13 +45,13 @@ app.post('/register', (req, res) => {
 
 app.post('/api/users/login', (req, res) => {
   User.findOne({
-    username: req.body.username
+    user_id: req.body.user_id
   })
   .then (async (user) => {
       if (!user) {
           throw new Error("제공된 아이디에 해당하는 유저가 없습니다.")
       }
-      const isMatch = await user.comparePassword(req.body.password);
+      const isMatch = await user.comparePassword(req.body.user_pw);
       return { isMatch, user };
   })
   .then(({ isMatch, user }) => {
@@ -83,8 +83,8 @@ app.get('/api/users/auth', auth, (req, res) => {
       _id : req.user._id,
       isAdmin : req.user.role === 0 ? false : true,
       isAuth: true,
-      name : req.user.name,
-      parentContact: req.user.parentContact,
+      user_name : req.user.user_name,
+      user_pt_num: req.user.user_pt_num,
       role : req.user.role,
   })
 })
