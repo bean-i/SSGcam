@@ -22,4 +22,4 @@ const virtualNumberSchema = mongoose.Schema({
 
 const VirtualNumber = mongoose.model('VirtualNumber', virtualNumberSchema);
 
-module.exports = { VirtualNumber }
+module.exports = { VirtualNumber };

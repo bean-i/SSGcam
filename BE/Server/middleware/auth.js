@@ -11,7 +11,7 @@ let auth = async (req, res, next) => {
         next();
     } catch (err) {
         throw err;
-    }
+    }//
 };
 
 module.exports = { auth };
