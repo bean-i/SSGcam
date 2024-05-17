@@ -162,10 +162,10 @@ class _LoginScreen extends State<LoginScreen> {
                   },
                   style: ButtonStyle(
                     backgroundColor:
-                        WidgetStateProperty.all(const Color(0xFF549DEF)),
-                    minimumSize: WidgetStateProperty.all(const Size(120, 50)),
-                    elevation: WidgetStateProperty.all(0),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    MaterialStateProperty.all(const Color(0xFF549DEF)),
+                    minimumSize: MaterialStateProperty.all(const Size(120, 50)),
+                    elevation: MaterialStateProperty.all(0),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     )),
                   ),
