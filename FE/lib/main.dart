@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import 'screens/main_screen.dart';
 import 'package:logger/logger.dart';
 
