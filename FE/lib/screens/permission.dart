@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 var logger3 = Logger();
 
-class PermissionScreen extends StatelessWidget{
+class PermissionScreen extends StatelessWidget {
   const PermissionScreen({super.key});
 
   @override
@@ -12,21 +12,20 @@ class PermissionScreen extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
-        padding: const EdgeInsets.all(50.0),
+        padding: const EdgeInsets.all(40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Center(
-                child: SizedBox(
-                  width: 150,
-                  height: 70,
-                  child: Image.asset(
-                    'assets/logo.png',
-                    fit: BoxFit.cover,
-                  ),
+              child: SizedBox(
+                width: 150,
+                height: 70,
+                child: Image.asset(
+                  'assets/images/blueLogo.png',
+                  fit: BoxFit.cover,
                 ),
-
+              ),
             ),
             const SizedBox(height: 20),
             const Center(
@@ -46,7 +45,7 @@ class PermissionScreen extends StatelessWidget{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 10),  // 상단에 10 픽셀의 패딩 추가
+                    padding: EdgeInsets.only(top: 10), // 상단에 10 픽셀의 패딩 추가
                     child: Icon(
                       Icons.mic_none,
                       color: Colors.black,
@@ -55,7 +54,7 @@ class PermissionScreen extends StatelessWidget{
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    width: 250,
+                    width: 230,
                     height: 100,
                     alignment: Alignment.centerLeft,
                     child: const Column(
@@ -86,7 +85,7 @@ class PermissionScreen extends StatelessWidget{
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(top: 10),  // 상단에 10 픽셀의 패딩 추가
+                    padding: EdgeInsets.only(top: 10), // 상단에 10 픽셀의 패딩 추가
                     child: Icon(
                       Icons.notifications_none,
                       color: Colors.black,
@@ -95,7 +94,7 @@ class PermissionScreen extends StatelessWidget{
                   ),
                   const SizedBox(width: 10),
                   Container(
-                    width: 250,
+                    width: 230,
                     height: 100,
                     alignment: Alignment.centerLeft,
                     child: const Column(
@@ -120,40 +119,40 @@ class PermissionScreen extends StatelessWidget{
             ),
             const SizedBox(height: 200),
             Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  // 권한 허용 로직
-                  var microphoneStatus = await Permission.microphone.request(); // 마이크 권한 요청
-                  var notificationStatus = await Permission.notification.request(); // 알림 권한 요청
+                child: ElevatedButton(
+                    onPressed: () async {
+                      // 권한 허용 로직
+                      var microphoneStatus =
+                          await Permission.microphone.request(); // 마이크 권한 요청
+                      var notificationStatus =
+                          await Permission.notification.request(); // 알림 권한 요청
 
-                  if (microphoneStatus.isGranted && notificationStatus.isGranted){
-                    // 권한이 모두 허용된 경우
-                    logger3.d("권한이 모두 허용됨");
-                  }else{
-                    // 하나 또는 두 권한 모두 거부된 경우
-                    logger3.d("권한이 거부됨");
-                  }
-                },
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(const Color(0xFF549DEF)),
-                  minimumSize: MaterialStateProperty.all(const Size(270, 60)),
-                  elevation: MaterialStateProperty.all(0),
-                  shape: MaterialStateProperty.all(
-                      RoundedRectangleBorder(
+                      if (microphoneStatus.isGranted &&
+                          notificationStatus.isGranted) {
+                        // 권한이 모두 허용된 경우
+                        logger3.d("권한이 모두 허용됨");
+                      } else {
+                        // 하나 또는 두 권한 모두 거부된 경우
+                        logger3.d("권한이 거부됨");
+                      }
+                    },
+                    style: ButtonStyle(
+                      backgroundColor:
+                          WidgetStateProperty.all(const Color(0xFF549DEF)),
+                      minimumSize: WidgetStateProperty.all(const Size(270, 60)),
+                      elevation: WidgetStateProperty.all(0),
+                      shape: WidgetStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
-                      )
-                  ),
-                ),
-                child: const Text(
-                  '권한 허용',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                )
-              )
-            )
+                      )),
+                    ),
+                    child: const Text(
+                      '권한 허용',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )))
           ],
         ),
       ),
