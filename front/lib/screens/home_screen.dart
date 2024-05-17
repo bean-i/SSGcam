@@ -10,52 +10,53 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Padding(
-            padding: const EdgeInsets.only(left: 20.0), // 왼쪽에 20 픽셀의 패딩 추가
-            child: Image.asset(
-              'assets/images/logo.png',
-              width: 78,
+      appBar: AppBar(
+        title: Padding(
+          padding: const EdgeInsets.only(left: 20.0),
+          child: Image.asset(
+            'assets/images/logo.png',
+            width: 78,
+          ),
+        ),
+        backgroundColor: Colors.white,
+        centerTitle: false,
+      ),
+      backgroundColor: const Color(0xfff3f3f3),
+      body: ListView(
+        physics: const ClampingScrollPhysics(),
+        children: <Widget>[
+          greetingCard(context),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 17,
+              horizontal: 23,
+            ),
+            child: Column(
+              children: [
+                callForwarding(context),
+                const SizedBox(height: 17),
+                chatbotCard(context),
+                const SizedBox(height: 17),
+                IntrinsicHeight(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: searchCard(context),
+                      ),
+                      const SizedBox(width: 17),
+                      Expanded(
+                        child: recordCard(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          backgroundColor: Colors.white,
-          centerTitle: false, // 타이틀을 왼쪽 정렬
-        ),
-        backgroundColor: const Color(0xfff3f3f3),
-        body: ListView(
-          physics: const ClampingScrollPhysics(),
-          children: <Widget>[
-            greetingCard(context),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 17,
-                horizontal: 23,
-              ), // 특정 아이템에 추가 패딩 적용
-              child: Column(
-                children: [
-                  callForwarding(context),
-                  const SizedBox(height: 17),
-                  chatbotCard(context),
-                  const SizedBox(height: 17),
-                  IntrinsicHeight(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Expanded(
-                          child: searchCard(context),
-                        ),
-                        const SizedBox(width: 17),
-                        Expanded(
-                          child: recordCard(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ));
+        ],
+      ),
+    );
   }
 }
 
