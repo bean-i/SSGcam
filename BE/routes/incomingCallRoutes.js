@@ -3,7 +3,7 @@ const { twiml: { VoiceResponse } } = require('twilio');
 
 const router = express.Router();
 
-router.post('/incomingCall', (req, res) => {
+router.post('/voice', (req, res) => {
     const twiml = new VoiceResponse();
     twiml.say({ voice: 'alice', language: 'ko-KR' }, '잠시 후 연결됩니다.');
     
