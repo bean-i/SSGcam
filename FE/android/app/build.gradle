@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
 }
 
 def localProperties = new Properties()
@@ -24,20 +25,13 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.front"
-    compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    compileSdk 34
+//    ndkVersion flutter.ndkVersion
+    ndkVersion "25.1.8937393"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
@@ -46,9 +40,10 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdk 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        minSdkVersion 21
     }
 
     buildTypes {
@@ -58,10 +53,23 @@ android {
             signingConfig signingConfigs.debug
         }
     }
-}
+    buildToolsVersion '34.0.0'
 
+
+}
+dependencies {
+    // Twilio Voice SDK
+    implementation 'com.twilio:voice-android:6.3.2'
+
+    implementation platform('com.google.firebase:firebase-bom:32.8.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging:23.4.1'  // 최신 버전으로 확인
+    implementation 'com.google.code.gson:gson:2.10'
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+
+
+}
 flutter {
     source '../..'
 }
-
-dependencies {}
