@@ -23,6 +23,7 @@ class HomeScreen extends StatelessWidget {
         ),
         backgroundColor: const Color(0xfff3f3f3),
         body: ListView(
+          physics: const ClampingScrollPhysics(),
           children: <Widget>[
             greetingCard(context),
             Padding(
@@ -90,7 +91,7 @@ Widget greetingCard(BuildContext context) {
               ),
               const TextSpan(text: '\n'),
               TextSpan(
-                text: '143건',
+                text: ' 143건 ',
                 style: TextStyle(
                   fontFamily: 'PretendardBold',
                   backgroundColor: Colors.white.withOpacity(0.7),
