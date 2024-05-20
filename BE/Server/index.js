@@ -25,9 +25,13 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const mongoose = require('mongoose')
+const { createModel } = require('mongoose-gridfs');
+
 mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
+
+
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -160,3 +164,6 @@ app.post('/fraudcases', async (req, res) => {
 //       res.status(500).send({ message: '가상 번호 발급 및 저장에 실패했습니다.', error: error.message });
 //     }
 //   });
+
+const voiceRecordRouter = require('./routes/voiceRecordRoutes');
+app.use('/voiceRecord', voiceRecordRouter);
