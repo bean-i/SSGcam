@@ -7,16 +7,21 @@ const recordSchema = new mongoose.Schema({
         unique: true,
         default : new mongoose.Types.ObjectId
     },
-    rc_phoneNumber: {
+    rc_fd_num: {
         type: String,
         required: true
     },
-    rc_riskLevel: {
+    rc_fd_category: {
+        type: String,
+        required: true,
+        enum: ['수사기관사칭형', '대출사기형', '기타']
+    },
+    rc_fd_level: {
         type: String,
         required: true,
         enum: ['낮음', '보통', '높음']
     },
-    rc_voiceRecord: {
+    rc_audio_file: {
         type: mongoose.Schema.Types.ObjectId,
         required: true
     },
