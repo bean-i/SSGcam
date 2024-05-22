@@ -32,8 +32,8 @@ class _LoginScreen extends State<LoginScreen> {
           'Content-Type': 'application/json; charset=UTF-8',
         },
         body: jsonEncode(<String, String>{
-          'username': username,
-          'password': password,
+          'user_id': username,
+          'user_pw': password,
         }),
       );
 
@@ -44,6 +44,7 @@ class _LoginScreen extends State<LoginScreen> {
             const SnackBar(content: Text('로그인 성공!')),
           );
           // 로그인 성공 시 다음 화면으로 이동 또는 다른 로직 추가
+          Navigator.pushNamed(context, '/main');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 실패: ${responseBody['message']}')),
@@ -92,7 +93,6 @@ class _LoginScreen extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      // 비활성화 상태의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -100,7 +100,6 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      // 포커스 받았을 때의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -132,7 +131,6 @@ class _LoginScreen extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      // 비활성화 상태의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -140,7 +138,6 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      // 포커스 받았을 때의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -155,11 +152,7 @@ class _LoginScreen extends State<LoginScreen> {
               const SizedBox(height: 25),
               Center(
                 child: ElevatedButton(
-                  // onPressed: () => _login(context),
-                  // 로그인 구현 X 임시 테스트
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/main');
-                  },
+                  onPressed: () => _login(context),
                   style: ButtonStyle(
                     backgroundColor:
                     MaterialStateProperty.all(const Color(0xFF549DEF)),

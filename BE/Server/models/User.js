@@ -25,7 +25,7 @@ const userSchema = mongoose.Schema({
         required: true 
     },
     user_pt_num: {
-        type: String,
+        type: [String],
         required: false 
     },
     role: {

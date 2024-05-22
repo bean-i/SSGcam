@@ -8,6 +8,8 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const { User } = require('./models/User');
+const config = require('./config/key');
+const { auth } = require('./middleware/auth');
 const { FraudCases } = require('./models/FraudCases');
 const { VirtualNumber } = require('./models/VirtualNumber');
 const { ChatBot } = require('./models/ChatBot');
@@ -17,48 +19,55 @@ const twilio = require('twilio');
 // const authToken = '';
 // const client = twilio(accountSid, authToken);
 
-const config = require('./config/key');
-const { auth } = require('./middleware/auth');
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 const mongoose = require('mongoose')
-const { createModel } = require('mongoose-gridfs');
+// const { createModel } = require('mongoose-gridfs');
 
 mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
-
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
 app.post('/register', (req, res) => {
-    const { user_pw, user_pw_confirm } = req.body;
+  const { name, username, password, confirmPassword, parentContact } = req.body;
+  console.log('Register endpoint hit with:', req.body);
 
-    if (user_pw !== user_pw_confirm) {
-        return res.status(400).json({
-            success: false,
-            message: "비밀번호가 일치하지 않습니다."
-        });
-    }
-    const user = new User(req.body);
+  if (password !== confirmPassword) {
+    console.log('비번 확인 잘못됨');
+      return res.status(400).json({
+          success: false,
+          message: "비밀번호가 일치하지 않습니다."
+      });
+  }
+  const user = new User({
+    user_name: name,
+    user_id: username,
+    user_pw: password,
+    user_pw_confirm: confirmPassword,
+    user_pt_num: parentContact,
+  });
 
-    user.save().then(() => {
-        res.status(200).json({
-            success: true
-        });
-    }).catch((err) => {
-        return res.status(500).json({ success: false, err });
-    });
+  user.save()
+    .then(() => {
+      console.log('저장 성공');
+      res.status(200).json({
+          success: true
+      });
+  }).catch((err) => {
+      console.log('저장 실패 : ', err);
+      return res.status(500).json({ success: false, err });
+  });
 });
 
 
 app.post('/api/users/login', (req, res) => {
+  console.log('로그인 시도');
   User.findOne({
     user_id: req.body.user_id
   })
@@ -117,47 +126,48 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.post('/fraudcases', async (req, res) => {
-    try {
-      const { fc_user, fc_number, fc_description, fc_date } = req.body;
-  
-      const newFraudCase = new FraudCases({
-        fc_user,
-        fc_number,
-        fc_description,
-        fc_date: fc_date ? new Date(fc_date) : undefined, 
-      });
-  
-      await newFraudCase.save();
-  
-      res.status(201).send({ message: '피해 사례가 성공적으로 등록되었습니다.', data: newFraudCase });
-    } catch (error) {
-      res.status(500).send({ message: '서버 오류로 피해 사례를 등록할 수 없습니다.', error: error.message });
-    }
-  });
-  
+
+// app.post('/fraudcases', async (req, res) => {
+//   try {
+//     const { fc_user, fc_number, fc_description, fc_date } = req.body;
+
+//     const newFraudCase = new FraudCases({
+//       fc_user,
+//       fc_number,
+//       fc_description,
+//       fc_date: fc_date ? new Date(fc_date) : undefined, 
+//     });
+
+//     await newFraudCase.save();
+
+//     res.status(201).send({ message: '피해 사례가 성공적으로 등록되었습니다.', data: newFraudCase });
+//   } catch (error) {
+//     res.status(500).send({ message: '서버 오류로 피해 사례를 등록할 수 없습니다.', error: error.message });
+//   }
+// });
+
 
 // app.post('/virtualnumbers', async (req, res) => {
 //     try {
 //       const { vn_id } = req.body;
-  
+
 //       const purchasedNumber = await client.availablePhoneNumbers('US').local.list({limit: 1})
 //         .then(data => {
 //           const phoneNumber = data[0].phoneNumber;
 //           return client.incomingPhoneNumbers
 //             .create({phoneNumber: phoneNumber});
 //         });
-  
+
 //       const { sid: vn_twilioID, phoneNumber: vn_number } = purchasedNumber;
-  
+
 //       const newVirtualNumber = new VirtualNumber({
 //         vn_id,
 //         vn_twilioID,
 //         vn_number
 //       });
-  
+
 //       await newVirtualNumber.save();
-  
+
 //       res.status(201).send({ message: '가상 번호가 성공적으로 발급되어 저장되었습니다.', data: newVirtualNumber });
 //     } catch (error) {
 //       console.error(error);
@@ -165,5 +175,5 @@ app.post('/fraudcases', async (req, res) => {
 //     }
 //   });
 
-const voiceRecordRouter = require('./routes/voiceRecordRoutes');
-app.use('/voiceRecord', voiceRecordRouter);
+// const voiceRecordRouter = require('./routes/voiceRecordRoutes');
+// app.use('/voiceRecord', voiceRecordRouter);
