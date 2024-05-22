@@ -1,21 +1,15 @@
 const express = require('express');
-const { twiml: { VoiceResponse } } = require('twilio');
-
 const router = express.Router();
+const twilio = require('twilio');
 
 router.post('/voice', (req, res) => {
-    const twiml = new VoiceResponse();
-    twiml.say({ voice: 'alice', language: 'ko-KR' }, '잠시 후 연결됩니다.');
-    
-    // const dial = twiml.dial({callerId: process.env.TWILIO_PHONE_NUMBER});
-    // dial.number('+821088420603');
+    const response = new twilio.twiml.VoiceResponse();
+    response.start().stream({ url: 'wss://3ccbda9d7ed4.ngrok.app' });
+    response.say('Hi bin, Start speaking to see your audio transcribed in the console');
+    response.pause({ length: 30 });
 
-    console.log('Incoming call received');
-    console.log('From:', req.body.From);
-    console.log('To:', req.body.To);
-
-    res.type('text/xml');
-    res.send(twiml.toString());
+    res.set('Content-Type', 'text/xml');
+    res.send(response.toString());
 });
 
 module.exports = router;
