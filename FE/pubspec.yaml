@@ -54,6 +54,7 @@ dependencies:
   open_filex: ^4.4.0
   logger: ^2.3.0
   permission_handler: ^11.3.1
+  audioplayers: ^6.0.0
 
 dev_dependencies:
   flutter_test:
