@@ -10,7 +10,8 @@ router.get('/makeCall', (req, res) => {
         to: toNumber,
         from: fromNumber,
         // url: 'https://97f6-115-91-214-4.ngrok-free.app/incomingCall',
-        url: 'https://scam.ngrok.app/voice',
+        // url: 'https://scam.ngrok.app/voice',
+        url: 'https://3ccbda9d7ed4.ngrok.app',
         // url: 'https://handler.twilio.com/twiml/EHa0aa9b3f03d72b22dbb5d3cfa96eb112', //twiml bin 사용
         record: true
     }).then(call => {
