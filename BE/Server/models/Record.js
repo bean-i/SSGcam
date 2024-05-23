@@ -1,11 +1,11 @@
 const mongoose = require('mongoose');
+// const ObjectId = mongoose.Schema.Types.ObjectId; 
 
 const recordSchema = new mongoose.Schema({
     rc_user_id: {
-        type: ObjectId,
+        type: String,
         required: true,
         unique: true,
-        default : new mongoose.Types.ObjectId
     },
     rc_fd_num: {
         type: String,
@@ -22,7 +22,8 @@ const recordSchema = new mongoose.Schema({
         enum: ['낮음', '보통', '높음']
     },
     rc_audio_file: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
+        //type: mongoose.Schema.Types.ObjectId,
         required: true
     },
     createdAt: {

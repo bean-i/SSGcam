@@ -12,11 +12,6 @@ const { FraudCases } = require('./models/FraudCases');
 const { VirtualNumber } = require('./models/VirtualNumber');
 const { ChatBot } = require('./models/ChatBot');
 
-const twilio = require('twilio');
-// const accountSid = '';
-// const authToken = '';
-// const client = twilio(accountSid, authToken);
-
 const config = require('./config/key');
 const { auth } = require('./middleware/auth');
 
@@ -30,8 +25,6 @@ const { createModel } = require('mongoose-gridfs');
 mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
-
-
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
@@ -117,53 +110,8 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.post('/fraudcases', async (req, res) => {
-    try {
-      const { fc_user, fc_number, fc_description, fc_date } = req.body;
-  
-      const newFraudCase = new FraudCases({
-        fc_user,
-        fc_number,
-        fc_description,
-        fc_date: fc_date ? new Date(fc_date) : undefined, 
-      });
-  
-      await newFraudCase.save();
-  
-      res.status(201).send({ message: '피해 사례가 성공적으로 등록되었습니다.', data: newFraudCase });
-    } catch (error) {
-      res.status(500).send({ message: '서버 오류로 피해 사례를 등록할 수 없습니다.', error: error.message });
-    }
-  });
-  
-
-// app.post('/virtualnumbers', async (req, res) => {
-//     try {
-//       const { vn_id } = req.body;
-  
-//       const purchasedNumber = await client.availablePhoneNumbers('US').local.list({limit: 1})
-//         .then(data => {
-//           const phoneNumber = data[0].phoneNumber;
-//           return client.incomingPhoneNumbers
-//             .create({phoneNumber: phoneNumber});
-//         });
-  
-//       const { sid: vn_twilioID, phoneNumber: vn_number } = purchasedNumber;
-  
-//       const newVirtualNumber = new VirtualNumber({
-//         vn_id,
-//         vn_twilioID,
-//         vn_number
-//       });
-  
-//       await newVirtualNumber.save();
-  
-//       res.status(201).send({ message: '가상 번호가 성공적으로 발급되어 저장되었습니다.', data: newVirtualNumber });
-//     } catch (error) {
-//       console.error(error);
-//       res.status(500).send({ message: '가상 번호 발급 및 저장에 실패했습니다.', error: error.message });
-//     }
-//   });
-
 const voiceRecordRouter = require('./routes/voiceRecordRoutes');
 app.use('/voiceRecord', voiceRecordRouter);
+
+const recordRoutes = require('./routes/recordRoutes');
+app.use('/api', recordRoutes);

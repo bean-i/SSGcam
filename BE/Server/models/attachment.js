@@ -11,7 +11,7 @@ const saveFile = (fileBuffer, fileName) => {
         });
 
         const uploadStream = bucket.openUploadStream(fileName, {
-            contentType: 'audio/wav', // adjust according to your file type
+            contentType: 'audio/wav', 
             metadata: {
                 description: 'Voice file'
             }

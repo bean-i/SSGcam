@@ -3,27 +3,31 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const mongoose = require('mongoose');
-const { ObjectID } = require('mongodb');
+const { ObjectId } = mongoose.Types;
 const { createModel } = require('mongoose-gridfs');
 const { Readable } = require('stream');
 const config = require('../config/key');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 
+const { GridFSBucket } = require('mongodb');
+const { saveFile } = require('../models/Attachment');
+const { umask } = require('process');
 
-const { saveFile } = require('../models/attachment');
-
+const connection = mongoose.connection;
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const router = express.Router();
 
 router.get('/:trackID', (req, res) => {
-    if (!ObjectID.isValid(req.params.trackID)) {
+    if (!ObjectId.isValid(req.params.trackID)) {
         return res.status(400).json({
             message: "Invalid trackID in URL parameter."
         });
     }
+
+    const Attachment = createModel({ modelName: 'Attachment', connection });
 
     Attachment.findById(req.params.trackID, (err, file) => {
         if (err || !file) {
@@ -35,7 +39,7 @@ router.get('/:trackID', (req, res) => {
         res.set('content-type', file.contentType);
         res.set('accept-ranges', 'bytes');
 
-        const reader = Attachment.read({ _id: ObjectID(req.params.trackID) });
+        const reader = Attachment.read({ _id: ObjectId(req.params.trackID) });
         reader.on('data', (chunk) => {
             res.write(chunk);
         });
@@ -64,15 +68,16 @@ router.post('/upload', upload.single('file'), async (req, res) => {
     }
 });
 
-
 router.delete("/:trackID", (req, res) => {
-    if (!ObjectID.isValid(req.params.trackID)) {
+    if (!ObjectId.isValid(req.params.trackID)) {
         return res.status(400).json({
             message: "Invalid trackID in URL parameter."
         });
     }
 
-    Attachment.unlink({ _id: ObjectID(req.params.trackID) }, (err, file) => {
+    const Attachment = createModel({ modelName: 'Attachment', connection });
+
+    Attachment.unlink({ _id: ObjectId(req.params.trackID) }, (err, file) => {
         if (err) {
             console.log("Failed to delete\n" + err);
             return res.status(400).json({
@@ -87,6 +92,26 @@ router.delete("/:trackID", (req, res) => {
             file: file,
         });
     });
+});
+
+router.get('/file/:fileID', (req, res) => {
+    try {
+        const bucket = new GridFSBucket(connection.db, {
+            bucketName: 'attachments'
+        });
+
+        const downloadStream = bucket.openDownloadStream(new ObjectId(req.params.fileID));
+
+        res.set('Content-Type', 'audio/wav');
+
+        downloadStream.on('error', () => {
+            res.status(404).send('File not found');
+        });
+
+        downloadStream.pipe(res);
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
 module.exports = router;
