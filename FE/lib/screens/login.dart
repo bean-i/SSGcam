@@ -27,7 +27,7 @@ class _LoginScreen extends State<LoginScreen> {
 
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/users/login'), // 서버 URL을 변경하세요
+        Uri.parse('http://10.0.2.2:3000/api/users/login'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

@@ -1,9 +1,40 @@
-// lib/screens/record_screen.dart
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
+import 'dart:convert';
+import 'package:just_audio/just_audio.dart';
 
-class RecordScreen extends StatelessWidget {
+var logger4 = Logger();
+
+class RecordScreen extends StatefulWidget {
   const RecordScreen({super.key});
+
+  @override
+  _RecordScreenState createState() => _RecordScreenState();
+}
+
+class _RecordScreenState extends State<RecordScreen> {
+  List<dynamic> records = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchRecords();
+  }
+
+  Future<void> fetchRecords() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/records'));
+    logger4.d('HTTP GET /api/records status: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      logger4.d('HTTP GET /api/records response body: ${response.body}');
+      setState(() {
+        records = json.decode(response.body);
+      });
+    } else {
+      logger4.e('Failed to load records, status code: ${response.statusCode}');
+      throw Exception('Failed to load records');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,77 +56,35 @@ class RecordScreen extends StatelessWidget {
       ),
       body: Container(
         color: const Color(0xfff3f3f3),
-        child: VoicePhishingList(),
+        child: records.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : ListView.builder(
+          itemCount: records.length,
+          itemBuilder: (context, index) {
+            return PhishingCard(item: records[index]);
+          },
+        ),
       ),
     );
   }
 }
 
-class VoicePhishingList extends StatelessWidget {
-  VoicePhishingList({super.key});
-
-  final List<PhishingItem> items = [
-    PhishingItem(
-      dangerLevel: '위험',
-      percentage: '96%',
-      phoneNumber: '02-0000-0000',
-      description: '대출 사기형 보이스피싱',
-      dangerColor: Colors.red,
-    ),
-    PhishingItem(
-      dangerLevel: '경고',
-      percentage: '87%',
-      phoneNumber: '02-0000-0000',
-      description: '기관 사기형 보이스피싱',
-      dangerColor: Colors.orange,
-    ),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: items.length,
-      itemBuilder: (context, index) {
-        return PhishingCard(item: items[index]);
-      },
-    );
-  }
-}
-
-class PhishingItem {
-  late final String dangerLevel;
-  late final String percentage;
-  late final String phoneNumber;
-  late final String description;
-  late final Color dangerColor;
-
-  PhishingItem({
-    required this.dangerLevel,
-    required this.percentage,
-    required this.phoneNumber,
-    required this.description,
-    required this.dangerColor,
-});
-}
-
-
 class PhishingCard extends StatelessWidget {
-
-  final PhishingItem item;
+  final dynamic item;
 
   const PhishingCard({super.key, required this.item});
 
-  void _showAlertDialog(BuildContext context){
+  void _showAlertDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (BuildContext context){
+      builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
           title: const Center(
-            child:Text(
+            child: Text(
               "등록이 완료되었습니다.",
               style: TextStyle(
                 fontSize: 15,
@@ -107,8 +96,8 @@ class PhishingCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("번호: ${item.phoneNumber}"),
-              Text("등록 내용: ${item.description}"),
+              Text("번호: ${item['rc_fd_num']}"),
+              Text("등록 내용: ${item['rc_fd_category']}"),
             ],
           ),
           actions: [
@@ -132,10 +121,18 @@ class PhishingCard extends StatelessWidget {
   }
 
   void _showAudioPlayer(BuildContext context) {
+    final audioFileId = item['rc_audio_file'];
+    final url = 'http://10.0.2.2:3000/api/audio/$audioFileId';
+
+    logger4.d('Requesting audio from URL: $url');  // 클라이언트 로그 추가
+
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AudioPlayerPage(),
+        builder: (context) => AudioPlayerPage(
+          audioUrl: url,
+          date: item['createdAt'],
+        ),
       ),
     );
   }
@@ -151,137 +148,148 @@ class PhishingCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         padding: const EdgeInsets.all(10),
-        child:
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 60,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: item.dangerColor,
-                        width: 5.0,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                         Text(
-                          item.dangerLevel,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 10,
-                          ),
-                        ),
-                        Text(
-                          item.percentage,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: _getDangerColor(item['rc_fd_level']),
+                      width: 5.0,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        item.phoneNumber,
+                        item['rc_fd_level'],
                         style: const TextStyle(
-                          fontSize: 20,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
+                          fontSize: 10,
                         ),
                       ),
                       Text(
-                        item.description,
+                        "${item['rc_fd_percentage']}%",
                         style: const TextStyle(
-                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      // 음성 파일 재생
-                      _showAudioPlayer(context);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(Colors.white),
-                      elevation: MaterialStateProperty.all(0),
-                      side: MaterialStateProperty.all(
-                        const BorderSide(
-                            color: Color(0xFF79c2f7),
-                            width: 1.5,
-                        ),
-                      ),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item['rc_fd_num'],
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    child: const Text(
-                        '통화 내용 듣기',
-                      style: TextStyle(
-                        color: Colors.black,
+                    Text(
+                      item['rc_fd_category'],
+                      style: const TextStyle(
+                        fontSize: 16,
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      // 피해 사례 등록
-                      _showAlertDialog(context);
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(const Color(0xFF79c2f7)),
-                      elevation: MaterialStateProperty.all(0),
-                      side: MaterialStateProperty.all(
-                        const BorderSide(
-                          color: Color(0xFF79c2f7),
-                          width: 1.5,
-                        ),
-                      ),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15),
-                        ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _showAudioPlayer(context);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    elevation: MaterialStateProperty.all(0),
+                    side: MaterialStateProperty.all(
+                      const BorderSide(
+                        color: Color(0xFF79c2f7),
+                        width: 1.5,
                       ),
                     ),
-                    child: const Text(
-                        '피해 사례 등록',
-                      style: TextStyle(
-                        color: Colors.black,
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 27),
-                ],
-              ),
-            ],
-          ),
+                  child: const Text(
+                    '통화 내용 듣기',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    _showAlertDialog(context);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(const Color(0xFF79c2f7)),
+                    elevation: MaterialStateProperty.all(0),
+                    side: MaterialStateProperty.all(
+                      const BorderSide(
+                        color: Color(0xFF79c2f7),
+                        width: 1.5,
+                      ),
+                    ),
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                    ),
+                  ),
+                  child: const Text(
+                    '피해 사례 등록',
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 27),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
-  
+
+  Color _getDangerColor(String level) {
+    switch (level) {
+      case '높음':
+        return Colors.red;
+      case '보통':
+        return Colors.orange;
+      case '낮음':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
 }
 
 class AudioPlayerPage extends StatefulWidget {
-  const AudioPlayerPage({super.key});
+  final String audioUrl;
+  final String date;
+  const AudioPlayerPage({super.key, required this.audioUrl, required this.date});
 
   @override
   _AudioPlayerPageState createState() => _AudioPlayerPageState();
@@ -293,18 +301,22 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
 
+
   @override
   void initState() {
     super.initState();
+    logger4.d("오디오 연결 : ${widget.audioUrl}");
     _audioPlayer = AudioPlayer();
-    _audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        duration = newDuration;
+    _audioPlayer.setUrl(widget.audioUrl).then((_) {
+      _audioPlayer.durationStream.listen((newDuration) {
+        setState(() {
+          duration = newDuration ?? Duration.zero;
+        });
       });
-    });
-    _audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        position = newPosition;
+      _audioPlayer.positionStream.listen((newPosition) {
+        setState(() {
+          position = newPosition;
+        });
       });
     });
   }
@@ -319,7 +331,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
     if (isPlaying) {
       _audioPlayer.pause();
     } else {
-      _audioPlayer.play('/hi.m4a' as Source); // 여기에 음성 파일 URL을 입력하세요.
+      _audioPlayer.play();
     }
     setState(() {
       isPlaying = !isPlaying;
@@ -343,9 +355,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
           color: Colors.white,
         ),
         backgroundColor: const Color(0xff202226),
-        title: const Text(
-          "2024.03.31",
-          style: TextStyle(
+        title: Text(
+          widget.date,
+          style: const TextStyle(
             fontFamily: 'PretendardSemiBold',
             fontSize: 18,
             color: Colors.white,
@@ -375,41 +387,40 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
               ),
             ),
             Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Slider(
-                      activeColor: Colors.blue,
-                      inactiveColor: Colors.grey,
-                      min: 0,
-                      max: duration.inSeconds.toDouble(),
-                      value: position.inSeconds.toDouble(),
-                      onChanged: (value) async {
-                        final newPosition = Duration(seconds: value.toInt());
-                        await _audioPlayer.seek(newPosition);
-                        await _audioPlayer.resume();
-                      },
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.white,
-                          ),
-                          iconSize: 64,
-                          onPressed: _togglePlayPause,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Slider(
+                    activeColor: Colors.blue,
+                    inactiveColor: Colors.grey,
+                    min: 0,
+                    max: duration.inSeconds.toDouble(),
+                    value: position.inSeconds.toDouble(),
+                    onChanged: (value) async {
+                      final newPosition = Duration(seconds: value.toInt());
+                      await _audioPlayer.seek(newPosition);
+                      await _audioPlayer.play();
+                    },
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          isPlaying ? Icons.pause : Icons.play_arrow,
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
-                  ],
-                )
-            )
+                        iconSize: 64,
+                        onPressed: _togglePlayPause,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 }
-

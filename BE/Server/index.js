@@ -1,11 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-const app = express()
-const port = 3000
+const app = express();
+const port = 3000;
 
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const { GridFSBucket } = require('mongodb');
 
 const { User } = require('./models/User');
 const config = require('./config/key');
@@ -25,6 +26,8 @@ app.use(cookieParser());
 
 const mongoose = require('mongoose')
 // const { createModel } = require('mongoose-gridfs');
+const Grid = require('gridfs-stream');
+const { Schema } = mongoose;
 
 mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB Connected...'))
@@ -119,6 +122,68 @@ app.get('/api/users/logout', auth, async (req, res) =>{
       return res.status(200).send({ success: true });
   } catch (err) {
       return res.json({ success: false, err });
+  }
+});
+
+
+
+
+// Record 데이터 가져오기
+const Record = require('./models/Record');
+const conn = mongoose.connection;
+let gfsBucket;
+// conn.once('open', () => {
+//   gfs = Grid(conn.db, mongoose.mongo);
+//   gfs.collection('uploads');
+//   console.log('GridFS initialized');
+// });
+conn.once('open', () => {
+  gfsBucket = new GridFSBucket(conn.db, { bucketName: 'uploads' });
+  console.log('GridFSBucket initialized');
+});
+
+app.get('/api/records', async (req, res) => {
+  console.log('탐지기록 가져오기 시도');
+  try{
+    const records = await Record.find();
+    console.log('탐지기록 가져오기 성공');
+    res.status(200).json(records);
+  }catch (err) {
+    console.log('탐지기록 가져오기 실패: ',err.message);
+    res.status(500).json({ sucess: false, error: err.message });
+  }
+});
+app.get('/api/audio/:id', async (req, res) => {
+  console.log("오디오 파일 요청 수신, ID:", req.params.id);
+  try {
+    const file = await conn.db.collection('uploads.files').findOne({ _id: new mongoose.Types.ObjectId(req.params.id) });
+    if (!file) {
+      console.log("파일을 찾을 수 없음");
+      return res.status(404).json({ success: false, message: '파일을 찾을 수 없습니다.' });
+    }
+
+    console.log("파일 찾음:", file);
+    res.set('Content-Type', file.contentType);
+
+    const readstream = gfsBucket.openDownloadStream(file._id);
+
+    readstream.on('data', (chunk) => {
+      console.log('데이터 청크 수신:', chunk.length);
+    });
+
+    readstream.on('end', () => {
+      console.log('파일 스트리밍 완료');
+    });
+
+    readstream.on('error', (err) => {
+      console.error('스트리밍 중 오류 발생:', err);
+      res.status(500).json({ success: false, error: err.message });
+    });
+
+    readstream.pipe(res);
+  } catch (err) {
+    console.log('오디오 파일 가져오기 실패:', err.message);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
