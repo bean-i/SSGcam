@@ -191,25 +191,58 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
+// 고유 식별자 카운터 스키마
+const CounterSchema = new Schema({
+  _id: { type: String, required: true },
+  seq: { type: Number, default: 0 }
+});
 
-// app.post('/fraudcases', async (req, res) => {
-//   try {
-//     const { fc_user, fc_number, fc_description, fc_date } = req.body;
+const Counter = mongoose.model('Counter', CounterSchema);
 
-//     const newFraudCase = new FraudCases({
-//       fc_user,
-//       fc_number,
-//       fc_description,
-//       fc_date: fc_date ? new Date(fc_date) : undefined, 
-//     });
+async function getNextSequence(name) {
+  const result = await Counter.findOneAndUpdate(
+      { _id: name },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+  );
+  return result.seq;
+}
 
-//     await newFraudCase.save();
 
-//     res.status(201).send({ message: '피해 사례가 성공적으로 등록되었습니다.', data: newFraudCase });
-//   } catch (error) {
-//     res.status(500).send({ message: '서버 오류로 피해 사례를 등록할 수 없습니다.', error: error.message });
-//   }
-// });
+app.post('/fraudcases', async (req, res) => {
+  console.log("피해사례 등록 시도");
+  try {
+    const { fc_user, fc_number, fc_description, fc_date } = req.body;
+
+    // 중복확인
+    const existingCase = await FraudCases.findOne({ 
+      fc_number: fc_number,
+      fc_user: fc_user,
+      fc_date: fc_date
+     });
+    if (existingCase) {
+      console.log("이미 등록된 피해 사례");
+      return res.status(409).send({ message: "이미 등록된 피해사례입니다."});
+    }
+    
+    // 고유 식별자
+    fc_id = await getNextSequence('fraudcases');
+    const newFraudCase = new FraudCases({
+      fc_id,
+      fc_user,
+      fc_number,
+      fc_description,
+      fc_date, 
+    });
+
+    await newFraudCase.save();
+    console.log("피해사례 등록 성공");
+    res.status(201).send({ message: '피해 사례가 성공적으로 등록되었습니다.', data: newFraudCase });
+  } catch (error) {
+    console.log("피해사례 등록 실패: "+ error);
+    res.status(500).send({ message: '서버 오류로 피해 사례를 등록할 수 없습니다.', error: error.message });
+  }
+});
 
 
 // app.post('/virtualnumbers', async (req, res) => {

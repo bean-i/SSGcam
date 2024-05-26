@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'dart:convert';
-import 'package:just_audio/just_audio.dart';
+import 'audio_screen.dart';
+
 
 var logger4 = Logger();
 
@@ -22,11 +23,10 @@ class _RecordScreenState extends State<RecordScreen> {
     fetchRecords();
   }
 
+  //  탐지기록 가져오기
   Future<void> fetchRecords() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/records'));
-    logger4.d('HTTP GET /api/records status: ${response.statusCode}');
     if (response.statusCode == 200) {
-      logger4.d('HTTP GET /api/records response body: ${response.body}');
       setState(() {
         records = json.decode(response.body);
       });
@@ -72,9 +72,36 @@ class _RecordScreenState extends State<RecordScreen> {
 class PhishingCard extends StatelessWidget {
   final dynamic item;
 
+  // 피해사례 등록
+  Future<void> registerFraudCase(BuildContext context) async {
+    logger4.e("피해 사례 등록 시도");
+    try {
+      final response = await http.post(
+          Uri.parse('http://10.0.2.2:3000/fraudcases'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'fc_user': item['rc_user_id'],
+            'fc_number': item['rc_fd_num'],
+            'fc_description': item['rc_fd_category'],
+            'fc_date': item['createdAt'],
+          }),
+      );
+      if (response.statusCode == 201){
+        _showAlertDialog(context, "등록 완료", fc_number: item['rc_fd_num'], fc_description: item['rc_fd_category']);
+      }else if(response.statusCode == 409){
+        _showAlertDialog(context, "등록 완료");
+      }
+
+    } catch (e) {
+      logger4.e("피해 사례 등록 오류: $e");
+    }
+  }
+
   const PhishingCard({super.key, required this.item});
 
-  void _showAlertDialog(BuildContext context) {
+  void _showAlertDialog(BuildContext context, String title, {String? fc_number, String? fc_description}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -83,34 +110,33 @@ class PhishingCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(15),
           ),
-          title: const Center(
+          title: Center(
             child: Text(
-              "등록이 완료되었습니다.",
-              style: TextStyle(
-                fontSize: 15,
+              title,
+              style: const TextStyle(
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          content: fc_number != null && fc_description != null
+              ? Column(
+            mainAxisSize: MainAxisSize.min, // 컬럼의 크기를 내용에 맞춤
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("번호: ${item['rc_fd_num']}"),
-              Text("등록 내용: ${item['rc_fd_category']}"),
+              Text("번호: $fc_number", style: const TextStyle(fontSize: 16)),
+              Text("등록 내용: $fc_description", style: const TextStyle(fontSize: 16)),
             ],
-          ),
+          )
+              : const Text("이미 등록된 사례입니다.", style: TextStyle(fontSize: 16)),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Center(
-                child: Text(
-                  "확인",
-                  style: TextStyle(
-                    color: Colors.blue,
-                  ),
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                "확인",
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -119,6 +145,7 @@ class PhishingCard extends StatelessWidget {
       },
     );
   }
+
 
   void _showAudioPlayer(BuildContext context) {
     final audioFileId = item['rc_audio_file'];
@@ -239,7 +266,8 @@ class PhishingCard extends StatelessWidget {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
-                    _showAlertDialog(context);
+                    // 피해 사례 DB 저장
+                    registerFraudCase(context);
                   },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(const Color(0xFF79c2f7)),
@@ -284,143 +312,5 @@ class PhishingCard extends StatelessWidget {
         return Colors.grey;
     }
   }
-}
 
-class AudioPlayerPage extends StatefulWidget {
-  final String audioUrl;
-  final String date;
-  const AudioPlayerPage({super.key, required this.audioUrl, required this.date});
-
-  @override
-  _AudioPlayerPageState createState() => _AudioPlayerPageState();
-}
-
-class _AudioPlayerPageState extends State<AudioPlayerPage> {
-  late AudioPlayer _audioPlayer;
-  bool isPlaying = false;
-  Duration duration = Duration.zero;
-  Duration position = Duration.zero;
-
-
-  @override
-  void initState() {
-    super.initState();
-    logger4.d("오디오 연결 : ${widget.audioUrl}");
-    _audioPlayer = AudioPlayer();
-    _audioPlayer.setUrl(widget.audioUrl).then((_) {
-      _audioPlayer.durationStream.listen((newDuration) {
-        setState(() {
-          duration = newDuration ?? Duration.zero;
-        });
-      });
-      _audioPlayer.positionStream.listen((newPosition) {
-        setState(() {
-          position = newPosition;
-        });
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
-  void _togglePlayPause() {
-    if (isPlaying) {
-      _audioPlayer.pause();
-    } else {
-      _audioPlayer.play();
-    }
-    setState(() {
-      isPlaying = !isPlaying;
-    });
-  }
-
-  String _formatDuration(Duration duration) {
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-    final hours = twoDigits(duration.inHours);
-    final minutes = twoDigits(duration.inMinutes.remainder(60));
-    final seconds = twoDigits(duration.inSeconds.remainder(60));
-    return [if (duration.inHours > 0) hours, minutes, seconds].join(':');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 80,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
-        backgroundColor: const Color(0xff202226),
-        title: Text(
-          widget.date,
-          style: const TextStyle(
-            fontFamily: 'PretendardSemiBold',
-            fontSize: 18,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  const Icon(
-                    Icons.play_circle_fill,
-                    color: Colors.grey,
-                    size: 100,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    _formatDuration(position),
-                    style: const TextStyle(color: Colors.white, fontSize: 24),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Slider(
-                    activeColor: Colors.blue,
-                    inactiveColor: Colors.grey,
-                    min: 0,
-                    max: duration.inSeconds.toDouble(),
-                    value: position.inSeconds.toDouble(),
-                    onChanged: (value) async {
-                      final newPosition = Duration(seconds: value.toInt());
-                      await _audioPlayer.seek(newPosition);
-                      await _audioPlayer.play();
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          isPlaying ? Icons.pause : Icons.play_arrow,
-                          color: Colors.white,
-                        ),
-                        iconSize: 64,
-                        onPressed: _togglePlayPause,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const ObjectId = Schema.Types.ObjectId;
 
 const fraudCasesSchema = mongoose.Schema({
     fc_id: {
@@ -7,7 +9,7 @@ const fraudCasesSchema = mongoose.Schema({
         unique: true 
     },
     fc_user: {
-        type: String,
+        type: ObjectId, // 수정
         ref: 'User', 
         maxlength: 20
     },
