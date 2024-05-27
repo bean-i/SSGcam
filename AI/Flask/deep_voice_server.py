@@ -34,7 +34,7 @@ def preprocess_audio(file):
 
 logging.basicConfig(level=logging.DEBUG)
 
-@app.route('/predict/deep', methods=['POST'])
+@app.route('/predict/deepvoice', methods=['POST'])
 def predict():
     if 'file' not in request.files:
         logging.debug("파일이 제출되지 않았습니다.")
