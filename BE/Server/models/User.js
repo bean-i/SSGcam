@@ -19,11 +19,6 @@ const userSchema = mongoose.Schema({
         minlength: 5,
         required: true
     },
-    user_pw_confirm: {
-        type: String,
-        minlength: 5,
-        required: true 
-    },
     user_pt_num: {
         type: [String],
         required: false 
@@ -31,12 +26,6 @@ const userSchema = mongoose.Schema({
     role: {
         type: Number,
         default: 0
-    },
-    token: {
-        type: String
-    },
-    tokenExp: {
-        type: Number
     }
 })
 
@@ -69,11 +58,9 @@ userSchema.methods.comparePassword = function(plainPassword) {
 }
 
 userSchema.methods.generateToken = function() {
-    user = this;
-    const token = jwt.sign(user._id.toJSON(), 'secretToken');
-    user.token = token;
-
-    return user.save();
+    const user = this;
+    const token = jwt.sign({userId: user._id.toJSON()}, 'secretToken', {expiresIn: '1h'});
+    return token;
 }
 
 userSchema.statics.findByToken = async function(token) {
@@ -89,13 +76,13 @@ userSchema.statics.findByToken = async function(token) {
                 }
             });
         });
-        const foundUser = await user.findOne({"_id" : decoded, "token" : token});
+        const foundUser = await user.findOne({"_id" : decoded.userId });
         return foundUser;
     } catch (err) {
         throw err;
     }
 };
 
-const User = mongoose.model('User', userSchema)
+const User = mongoose.model('User', userSchema);
 
-module.exports = { User }
+module.exports = { User };

@@ -71,9 +71,7 @@ app.post('/register', (req, res) => {
 
 app.post('/api/users/login', (req, res) => {
   console.log('로그인 시도');
-  User.findOne({
-    user_id: req.body.user_id
-  })
+  User.findOne({ user_id: req.body.user_id })
   .then (async (user) => {
       if (!user) {
           throw new Error("제공된 아이디에 해당하는 유저가 없습니다.")
@@ -86,14 +84,12 @@ app.post('/api/users/login', (req, res) => {
       if (!isMatch) {
           throw new Error("비밀번호가 틀렸습니다.")
       }
-      return user.generateToken();
-  })
-  .then ((user) => {
-      return res.cookie("x_auth", user.token)
-      .status(200)
-      .json({
-          loginSuccess: true,
-          userId: user._id
+      const token = user.generateToken();
+      console.log("생성된 JWT:", token);
+      res.status(200).json({
+        loginSuccess: true,
+        token: token,
+        userId: user._id
       });
   })
   .catch ((err) => {
@@ -102,7 +98,7 @@ app.post('/api/users/login', (req, res) => {
           loginSuccess: false,
           message: err.message
       });
-  })
+  });
 });
 
 app.get('/api/users/auth', auth, (req, res) => {
