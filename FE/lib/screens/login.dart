@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -25,46 +27,64 @@ class _LoginScreen extends State<LoginScreen> {
       return;
     }
 
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/users/login'), // 서버 URL을 변경하세요
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'username': username,
-          'password': password,
-        }),
-      );
+    final AuthService authService = AuthService();
+    bool loginSuccess = await authService.login(username, password);
 
-      if (response.statusCode == 200) {
-        final responseBody = json.decode(response.body);
-        if (responseBody['loginSuccess']) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('로그인 성공!')),
-          );
-          // 로그인 성공 시 다음 화면으로 이동 또는 다른 로직 추가
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('로그인 실패: ${responseBody['message']}')),
-          );
-        }
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('서버 오류: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
+    if (loginSuccess) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('네트워크 오류: $e')),
+        const SnackBar(content: Text('로그인 성공!')),
       );
+      Navigator.pushNamed(context, '/main');
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('로그인 실패')));
     }
   }
+
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse('http://10.0.2.2:3000/api/users/login'),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json; charset=UTF-8',
+  //       },
+  //       body: jsonEncode(<String, String>{
+  //         'user_id': username,
+  //         'user_pw': password,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       final responseBody = json.decode(response.body);
+  //       if (responseBody['loginSuccess']) {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('로그인 성공!')),
+  //         );
+  //         // 로그인 성공 시 다음 화면으로 이동 또는 다른 로직 추가
+  //         Navigator.pushNamed(context, '/main');
+  //       } else {
+  //         ScaffoldMessenger.of(context).showSnackBar(
+  //           SnackBar(content: Text('로그인 실패: ${responseBody['message']}')),
+  //         );
+  //       }
+  //     } else {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('서버 오류: ${response.statusCode}')),
+  //       );
+  //     }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('네트워크 오류: $e')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+      ),
       body: Padding(
           padding: const EdgeInsets.all(50.0),
           child: Column(
@@ -92,7 +112,6 @@ class _LoginScreen extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      // 비활성화 상태의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -100,7 +119,6 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      // 포커스 받았을 때의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -132,7 +150,6 @@ class _LoginScreen extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(15.0),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      // 비활성화 상태의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -140,7 +157,6 @@ class _LoginScreen extends State<LoginScreen> {
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      // 포커스 받았을 때의 테두리
                       borderRadius: BorderRadius.circular(15.0),
                       borderSide: const BorderSide(
                         color: Color(0xFF549DEF),
@@ -155,11 +171,7 @@ class _LoginScreen extends State<LoginScreen> {
               const SizedBox(height: 25),
               Center(
                 child: ElevatedButton(
-                  // onPressed: () => _login(context),
-                  // 로그인 구현 X 임시 테스트
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/main');
-                  },
+                  onPressed: () => _login(context),
                   style: ButtonStyle(
                     backgroundColor:
                         WidgetStateProperty.all(const Color(0xFF549DEF)),
