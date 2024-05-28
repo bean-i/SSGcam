@@ -5,6 +5,7 @@ const { Server: HttpServer } = require('http');
 const WebSocket = require('ws');
 const { SpeechClient } = require('@google-cloud/speech');
 const helmet = require('helmet');
+const axios = require('axios');
 
 // HTTP 서버와 WebSocket 서버를 동일한 포트에서 실행
 const server = new HttpServer(app);
@@ -19,7 +20,7 @@ const request = {
         languageCode: 'ko-KR',
         enableAutomaticPunctuation: true,
     },
-    interimResults: false
+    interimResults: true
 };
 
 // Helmet을 설정하여 CSP를 포함
@@ -31,7 +32,8 @@ app.use(helmet.contentSecurityPolicy({
 }));
 
 let recognizeStream = null;
-let finalTranscriptions = []; // 최종 인식된 트랜스크립션을 저장할 배열
+let text = []; // 최종 인식된 트랜스크립션을 저장할 배열
+let transcriptionCount = 0; // 트랜스크립션 카운트
 
 // 스트림 설정과 이벤트 리스너
 function setupRecognizeStream() {
@@ -44,22 +46,48 @@ function setupRecognizeStream() {
             console.error('Speech-to-Text 에러:', error);
             setTimeout(setupRecognizeStream, 1000); // 에러 발생 후 재시도
         })
-        .on('data', data => {
+        .on('data', async data => {
             const result = data.results[0];
             if (result && result.isFinal) {
-                finalTranscriptions.push(result.alternatives[0].transcript);
-                console.log('Transcriptions:', finalTranscriptions); // 최종 트랜스크립션 출력
+                const transcript = result.alternatives[0].transcript;
+                text.push(transcript);
+                transcriptionCount++;
+                console.log('Transcript:', transcript); // 매 문장마다 출력
 
-                if (finalTranscriptions.length >= 4) {
-                    console.log('특정 문장 출력: 4문장이 완성되었습니다!');
-                    finalTranscriptions = []; // 트랜스크립션 배열 초기화
+                if (transcriptionCount >= 4) {
+                    const fullText = text.join(' '); // 배열을 문자열로 변환 (콤마 없이 줄글로 이어줌)
+                    const transcriptData = {
+                        text: fullText
+                    };
+                    console.log('4문장이 완성되었습니다!', JSON.stringify(transcriptData, null, 2));
+                    
+                    // 알람 울리기
+                    try {
+                        await axios.post('http://192.168.0.2:4000/notify-event', {
+                            title: 'Transcript Complete',
+                            message: '4 sentences have been transcribed.'
+                        });
+                    } catch (error) {
+                        console.error('Error sending notification:', error);
+                    }
+
+                    // AI 서버에 데이터 전송
+                    // try {
+                    //     const response = await axios.post('http://localhost:5000/predict/voicephishing', transcriptData);
+                    //     console.log('AI 서버 응답:', response.data);
+                    // } catch (error) {
+                    //     console.error('AI 서버 요청 중 에러 발생:', error);
+                    // }
+
+                    text = []; // 트랜스크립션 배열 초기화
+                    transcriptionCount = 0; // 카운트 초기화
                 }
             }
         });
 }
 
 // WebSocket 연결 관리
-wss.on('connection', function connection(ws) {
+wss.on('connection', async function connection(ws) {
     console.log("New Connection Initiated");
 
     setupRecognizeStream();  // 연결 시 스트림 설정
@@ -101,12 +129,12 @@ app.post("/", async (req, res) => {
     res.send(
       `<Response>
          <Start>
-           <Stream url='wss://3ccbda9d7ed4.ngrok.app' />
+           <Stream url='wss://c09e19f11a32.ngrok.app' />
          </Start>
          <Say>
            Hi Start speaking to see your audio transcribed in the console
          </Say>
-         <Pause length='30' />
+         <Pause length='60' />
        </Response>`
     );
 });
