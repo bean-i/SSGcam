@@ -37,17 +37,16 @@ class _SearchScreenState extends State<SearchScreen> {
     });
 
     try {
-      // 서버에 POST 요청을 보내서 전화번호 검색
-      final response = await http.post(
-        Uri.parse('http://localhost:3000/mock'),
+      // 서버에 GET 요청을 보내서 전화번호 검색
+      final response = await http.get(
+        Uri.parse('http://localhost:3000/records/$phoneNumber'),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'phone': phoneNumber}),
       );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          _searchResults = List<Map<String, dynamic>>.from(data['results']);
+          _searchResults = List<Map<String, dynamic>>.from(data);
         });
       } else {
         setState(() {
