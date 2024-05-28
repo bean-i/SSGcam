@@ -19,7 +19,7 @@ const recordSchema = new mongoose.Schema({
     rc_fd_level: {
         type: String,
         required: true,
-        enum: ['낮음', '보통', '높음']
+        enum: ['낮음', '보통', '높음'] //높음, 위험
     },
     rc_audio_file: {
         type: String,
