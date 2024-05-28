@@ -8,9 +8,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 
 const { User } = require('./models/User');
-const { FraudCases } = require('./models/FraudCases');
-const { VirtualNumber } = require('./models/VirtualNumber');
-const { ChatBot } = require('./models/ChatBot');
 
 const config = require('./config/key');
 const { auth } = require('./middleware/auth');
