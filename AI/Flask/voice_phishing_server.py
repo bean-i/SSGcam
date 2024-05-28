@@ -39,7 +39,7 @@ def predict():
     process1_target = x_train_reshaped
 
     pred1 = process1_model.predict(process1_target)
-    process1_probability = pred1[0][0] * 100
+    process1_probability = "{:.0f}%".format(pred1[0][0] * 100)
     process1_output = np.where(pred1 > 0.5, 1, 0)
     voicephishing_detection_results = process1_output[0][0]
 
