@@ -29,9 +29,9 @@ class OnboardingScreen extends StatelessWidget {
               },
               style: ButtonStyle(
                 backgroundColor:
-                MaterialStateProperty.all(const Color((0xFF549DEF))),
-                minimumSize: MaterialStateProperty.all(const Size(270, 50)),
-                elevation: MaterialStateProperty.all(0),
+                    WidgetStateProperty.all(const Color((0xFF549DEF))),
+                minimumSize: WidgetStateProperty.all(const Size(270, 50)),
+                elevation: WidgetStateProperty.all(0),
               ),
               child: const Text(
                 '로그인',
@@ -50,10 +50,10 @@ class OnboardingScreen extends StatelessWidget {
                 Navigator.pushNamed(context, '/signup');
               },
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.white),
-                minimumSize: MaterialStateProperty.all(const Size(270, 50)),
-                elevation: MaterialStateProperty.all(0),
-                shape: MaterialStateProperty.all(
+                backgroundColor: WidgetStateProperty.all(Colors.white),
+                minimumSize: WidgetStateProperty.all(const Size(270, 50)),
+                elevation: WidgetStateProperty.all(0),
+                shape: WidgetStateProperty.all(
                   RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                     side:

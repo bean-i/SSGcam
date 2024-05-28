@@ -36,9 +36,8 @@ class _LoginScreen extends State<LoginScreen> {
       );
       Navigator.pushNamed(context, '/main');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('로그인 실패'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('로그인 실패')));
     }
   }
 
@@ -172,10 +171,10 @@ class _LoginScreen extends State<LoginScreen> {
                   onPressed: () => _login(context),
                   style: ButtonStyle(
                     backgroundColor:
-                    MaterialStateProperty.all(const Color(0xFF549DEF)),
-                    minimumSize: MaterialStateProperty.all(const Size(120, 50)),
-                    elevation: MaterialStateProperty.all(0),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                        WidgetStateProperty.all(const Color(0xFF549DEF)),
+                    minimumSize: WidgetStateProperty.all(const Size(120, 50)),
+                    elevation: WidgetStateProperty.all(0),
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     )),
                   ),
