@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:logger/logger.dart';
 
+import 'main_screen.dart';
+
 var logger2 = Logger();
 
 class SignupScreen extends StatefulWidget{
@@ -96,8 +98,16 @@ class _SignupScreenState extends State<SignupScreen>{
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(response.body);
       if (jsonResponse['success']) {
-        // 회원가입 성공 처리
-        logger2.d("회원가입 성공");
+        // logger2.d("회원가입 성공");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("회원가입에 성공했습니다!"),
+          ),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MainScreen()),
+        );
       } else {
         // 회원가입 실패 처리
         logger2.d("회원가입 실패: ${jsonResponse['message']}");
