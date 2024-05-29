@@ -58,7 +58,7 @@ def predict():
             process2_probability = (1 - pred2) * 100
 
         process2_output = np.where(pred2 > 0.5, 1, 0)
-        voicephishing_class_results = "수사기관 사칭형" if process2_output == 1 else "대출 사기형"
+        voicephishing_class_results = "기관 사칭형 보이스피싱" if process2_output == 1 else "대출 사기형 보이스피싱"
 
         response['voicephishing_class_results'] = voicephishing_class_results
 
