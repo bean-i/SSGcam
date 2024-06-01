@@ -3,7 +3,6 @@ process.env.GOOGLE_APPLICATION_CREDENTIALS = '/Users/ibeen/SSGcam/BE/ssgcam-e621
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const path = require('path');
 const helmet = require('helmet');
 const axios = require('axios');
 const { Server: HttpServer } = require('http');
@@ -268,7 +267,4 @@ const mergeRecordings = async (inputFiles, outputFile) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-});
-app.listen(PORT, () => {
-  console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
 });
