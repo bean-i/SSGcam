@@ -18,7 +18,7 @@ router.post('/search', async (req, res) => {
     // 결과 반환
     res.status(200).json({ results: records });
   } catch (error) {
-    console.error('Error searching phone number:', error);
+    console.error('Error searching phone number: ', error);
     res.status(500).json({ message: 'Server Error', error });
   }
 });

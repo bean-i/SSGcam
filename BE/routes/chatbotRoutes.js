@@ -50,7 +50,7 @@ router.post('/chatbot', async (req, res) => {
     }
   }
 
-  res.status(500).json({ error: 'Exceeded maximum retry attempts' });
+  res.status(500).json({ error: 'Exceeded maximum retry attempts.' });
 });
 
 module.exports = router;
