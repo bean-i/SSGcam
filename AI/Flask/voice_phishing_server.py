@@ -13,7 +13,7 @@ process2_model_path = '/Users/cindy/SSGcam/AI/Flask/models/fishing_classificaito
 process1_model = tf.keras.models.load_model(process1_model_path)
 process2_model = tf.keras.models.load_model(process2_model_path)
 
-@app.route('/predict/voicephising', methods=['POST'])
+@app.route('/predict/voicephishing', methods=['POST'])
 def predict():
     data = request.get_json()
 
