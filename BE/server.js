@@ -65,11 +65,12 @@ function setupRecognizeStream() {
                     try {
                         await axios.post('http://192.168.0.2:4000/notify-event', {
                             title: 'Transcript Complete',
-                            message: '4 sentences have been transcribed.'
+                            message: '4 sentences have been transcribed!'
                         });
                     } catch (error) {
                         console.error('Error sending notification:', error);
                     }
+                    
 
                     // AI 서버에 데이터 전송
                     // try {
