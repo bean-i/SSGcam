@@ -24,8 +24,7 @@ class _RecordScreenState extends State<RecordScreen> {
 
   //  탐지기록 가져오기
   Future<void> fetchRecords() async {
-    final response =
-        await http.get(Uri.parse('http://10.0.2.2:3000/api/records'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/api/records'));
     if (response.statusCode == 200) {
       setState(() {
         records = json.decode(response.body);
@@ -59,11 +58,11 @@ class _RecordScreenState extends State<RecordScreen> {
         child: records.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : ListView.builder(
-                itemCount: records.length,
-                itemBuilder: (context, index) {
-                  return PhishingCard(item: records[index]);
-                },
-              ),
+          itemCount: records.length,
+          itemBuilder: (context, index) {
+            return PhishingCard(item: records[index]);
+          },
+        ),
       ),
     );
   }
@@ -88,13 +87,12 @@ class PhishingCard extends StatelessWidget {
           'fc_date': item['createdAt'],
         }),
       );
-      if (response.statusCode == 201) {
-        _showAlertDialog(context, "등록 완료",
-            fc_number: item['rc_fd_num'],
-            fc_description: item['rc_fd_category']);
-      } else if (response.statusCode == 409) {
+      if (response.statusCode == 201){
+        _showAlertDialog(context, "등록 완료", fc_number: item['rc_fd_num'], fc_description: item['rc_fd_category']);
+      }else if(response.statusCode == 409){
         _showAlertDialog(context, "등록 완료");
       }
+
     } catch (e) {
       logger4.e("피해 사례 등록 오류: $e");
     }
@@ -102,8 +100,7 @@ class PhishingCard extends StatelessWidget {
 
   const PhishingCard({super.key, required this.item});
 
-  void _showAlertDialog(BuildContext context, String title,
-      {String? fc_number, String? fc_description}) {
+  void _showAlertDialog(BuildContext context, String title, {String? fc_number, String? fc_description}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -123,15 +120,13 @@ class PhishingCard extends StatelessWidget {
           ),
           content: fc_number != null && fc_description != null
               ? Column(
-                  mainAxisSize: MainAxisSize.min, // 컬럼의 크기를 내용에 맞춤
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("번호: $fc_number",
-                        style: const TextStyle(fontSize: 16)),
-                    Text("등록 내용: $fc_description",
-                        style: const TextStyle(fontSize: 16)),
-                  ],
-                )
+            mainAxisSize: MainAxisSize.min, // 컬럼의 크기를 내용에 맞춤
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("번호: $fc_number", style: const TextStyle(fontSize: 16)),
+              Text("등록 내용: $fc_description", style: const TextStyle(fontSize: 16)),
+            ],
+          )
               : const Text("이미 등록된 사례입니다.", style: TextStyle(fontSize: 16)),
           actions: [
             TextButton(
@@ -150,11 +145,12 @@ class PhishingCard extends StatelessWidget {
     );
   }
 
+
   void _showAudioPlayer(BuildContext context) {
     final audioFileId = item['rc_audio_file'];
     final url = 'http://10.0.2.2:3000/api/audio/$audioFileId';
 
-    logger4.d('Requesting audio from URL: $url'); // 클라이언트 로그 추가
+    logger4.d('Requesting audio from URL: $url');  // 클라이언트 로그 추가
 
     Navigator.push(
       context,
@@ -189,7 +185,7 @@ class PhishingCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: _getDangerColor(item['rc_fd_level']),
+                      color: _getDangerColor(item['rc_fd_level_str']),
                       width: 5.0,
                     ),
                   ),
@@ -197,7 +193,7 @@ class PhishingCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        item['rc_fd_level'],
+                        item['rc_fd_level_str'],
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -205,7 +201,7 @@ class PhishingCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${item['rc_fd_percentage']}%",
+                        "${item['rc_fd_level']}%",
                         style: const TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -245,15 +241,15 @@ class PhishingCard extends StatelessWidget {
                     _showAudioPlayer(context);
                   },
                   style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    elevation: WidgetStateProperty.all(0),
-                    side: WidgetStateProperty.all(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    elevation: MaterialStateProperty.all(0),
+                    side: MaterialStateProperty.all(
                       const BorderSide(
                         color: Color(0xFF79c2f7),
                         width: 1.5,
                       ),
                     ),
-                    shape: WidgetStateProperty.all(
+                    shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -273,16 +269,15 @@ class PhishingCard extends StatelessWidget {
                     registerFraudCase(context);
                   },
                   style: ButtonStyle(
-                    backgroundColor:
-                        WidgetStateProperty.all(const Color(0xFF79c2f7)),
-                    elevation: WidgetStateProperty.all(0),
-                    side: WidgetStateProperty.all(
+                    backgroundColor: MaterialStateProperty.all(const Color(0xFF79c2f7)),
+                    elevation: MaterialStateProperty.all(0),
+                    side: MaterialStateProperty.all(
                       const BorderSide(
                         color: Color(0xFF79c2f7),
                         width: 1.5,
                       ),
                     ),
-                    shape: WidgetStateProperty.all(
+                    shape: MaterialStateProperty.all(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -316,4 +311,5 @@ class PhishingCard extends StatelessWidget {
         return Colors.grey;
     }
   }
+
 }
