@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
+const { Schema } = mongoose;
+const ObjectId = Schema.Types.ObjectId;
 
-const recordSchema = new mongoose.Schema({
+const recordSchema = new Schema({
     rc_user_id: {
-        type: String,
+        type: ObjectId,
         required: true,
         unique: true,
     },
@@ -15,12 +17,16 @@ const recordSchema = new mongoose.Schema({
         required: true,
         enum: ['기관 사칭형 보이스피싱', '대출 사기형 보이스피싱', '기타']
     },
+    rc_fd_percentage: {
+        type: Number,
+        required: true
+    },
     rc_fd_level: {
         type: Number, 
         required: true
     },
     rc_audio_file: {
-        type: String,
+        type: ObjectId,
         required: true
     },
     createdAt: {

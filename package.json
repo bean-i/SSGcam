@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "gridfs-stream": "^1.1.1",
+    "mongoose": "^8.4.0"
+  }
+}
