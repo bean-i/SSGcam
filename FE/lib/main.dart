@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logger/logger.dart';
+import 'package:audio_session/audio_session.dart';
 import 'screens/main_screen.dart';
 import 'screens/onboarding.dart';
 import 'screens/login.dart';
@@ -16,6 +18,25 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 플러그인 초기화
   logger.d("앱 시작");
+
+  // final AudioContext audioContext = AudioContext(
+  //   iOS: AudioContextIOS(
+  //     defaultToSpeaker: true,
+  //     category: AVAudioSessionCategory.ambient,
+  //     options: [
+  //       AVAudioSessionOptions.defaultToSpeaker,
+  //       AVAudioSessionOptions.mixWithOthers,
+  //     ],
+  //   ),
+  //   android: AudioContextAndroid(
+  //     isSpeakerphoneOn: true,
+  //     stayAwake: true,
+  //     contentType: AndroidContentType.sonification,
+  //     usageType: AndroidUsageType.assistanceSonification,
+  //     audioFocus: AndroidAudioFocus.none,
+  //   ),
+  // );
+  // AudioPlayer.global.setGlobalAudioContext(audioContext);
 
   // 알림 초기화 설정
   const DarwinInitializationSettings initializationSettingsIOS =

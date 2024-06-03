@@ -302,7 +302,7 @@ class PhishingCard extends StatelessWidget {
 
   Color _getDangerColor(String level) {
     switch (level) {
-      case '높음':
+      case '위험':
         return Colors.red;
       case '보통':
         return Colors.orange;
