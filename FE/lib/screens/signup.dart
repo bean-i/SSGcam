@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:logger/logger.dart';
+import 'package:ssgcam/config.dart';
 
 import 'main_screen.dart';
 
@@ -84,7 +85,7 @@ class _SignupScreenState extends State<SignupScreen> {
     List<String> contacts =
         _contactControllers.map((controller) => controller.text).toList();
 
-    var url = Uri.parse('http://10.0.2.2:3000/register');
+    var url = Uri.parse('http://$ipAddress:3001/register');
 
     var response = await http.post(
       url,

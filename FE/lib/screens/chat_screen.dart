@@ -4,6 +4,7 @@ import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 import 'package:http/http.dart' as http;
 import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:ssgcam/config.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -101,7 +102,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _sendMessageToServer(String message) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:3000/chatbot'), // Node.js 서버 주소
+        Uri.parse('http://$ipAddress:3000/chatbot'), // Node.js 서버 주소
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'message': message}),
       );

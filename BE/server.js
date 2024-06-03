@@ -1,5 +1,5 @@
 process.env.GOOGLE_APPLICATION_CREDENTIALS = '/Users/ibeen/SSGcam/BE/ssgcam-e621d56cd3c1.json';
-
+require('dotenv').config(); // dotenv를 사용해 환경 변수 로드
 const express = require('express');
 const { Server: HttpServer } = require('http');
 const WebSocket = require('ws');
@@ -12,14 +12,12 @@ const twilio = require('twilio');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegInstaller = require('@ffmpeg-installer/ffmpeg');
 const ffprobeInstaller = require('@ffprobe-installer/ffprobe');
-const path = require('path');
 
 const app = express();
 const server = new HttpServer(app);
 const wss = new WebSocket.Server({ server });
 const speechClient = new SpeechClient();
 
-// Twilio 설정
 const accountSid = 'ACcbba44d426fa93be3633feceea031ca9'; 
 const authToken = 'e69917add2fe0cd4489bb11685ee6242';
 const client = twilio(accountSid, authToken);
@@ -31,7 +29,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Helmet 설정
 app.use(helmet.contentSecurityPolicy({
     directives: {
         defaultSrc: ["'self'"],
@@ -39,7 +36,6 @@ app.use(helmet.contentSecurityPolicy({
     }
 }));
 
-// Google STT 설정
 const request = {
     config: {
         encoding: 'MULAW',
@@ -93,7 +89,6 @@ function setupRecognizeStream() {
         });
 }
 
-// WebSocket 연결 관리
 wss.on('connection', async function connection(ws) {
     console.log("New Connection Initiated");
 
@@ -155,6 +150,8 @@ app.post('/voice', (req, res) => {
     res.type('text/xml');
     res.status(200).send(twiml);
 });
+
+const recordings = []; // 녹음 파일 배열
 
 // 부분 녹음 파일 처리 핸들러 1
 app.post('/handle-partial-recording', async (req, res) => {
@@ -267,11 +264,58 @@ const mergeRecordings = async (inputFiles, outputFile) => {
     });
 };
 
+// 기존의 chatbotRoutes 내용을 여기로 합침
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+app.post('/chatbot', async (req, res) => {
+  const userMessage = req.body.message;
+  console.log('Received message:', userMessage);
+
+  let attempts = 0;
+  const maxAttempts = 3;
+  const retryDelay = 1000; // 1초
+
+  while (attempts < maxAttempts) {
+    try {
+      const response = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-3.5-turbo',
+          messages: [
+            { role: 'system', content: 'You are an expert in voice phishing prevention who knows South Korean laws and regulations well. Please provide concise but detailed and accurate information.' },
+            { role: 'user', content: userMessage }
+          ],
+          max_tokens: 500, // Increase the max_tokens to allow longer responses
+          n: 1,
+          stop: ["\n"],
+          temperature: 0.5,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+          },
+        }
+      );
+
+      console.log('OpenAI response:', response.data);
+      return res.json({ reply: response.data.choices[0].message.content.trim() });
+    } catch (error) {
+      if (error.response && error.response.status === 429) {
+        attempts += 1;
+        console.error('Too many requests, retrying in', retryDelay, 'ms');
+        await wait(retryDelay);
+      } else {
+        console.error('Error fetching response from OpenAI:', error);
+        return res.status(500).json({ error: 'Failed to fetch response from ChatGPT' });
+      }
+    }
+  }
+
+  res.status(500).json({ error: 'Exceeded maximum retry attempts.' });
+});
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-});
-
-app.listen(PORT, () => {
-    console.log(`서버가 포트 ${PORT}에서 실행 중입니다.`);
 });

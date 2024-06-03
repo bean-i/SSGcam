@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart'; // FilteringTextInputFormatter를 사용하기 위해 추가
+import 'package:ssgcam/config.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -39,7 +40,7 @@ class _SearchScreenState extends State<SearchScreen> {
     try {
       // 서버에 GET 요청을 보내서 전화번호 검색
       final response = await http.get(
-        Uri.parse('http://localhost:3000/records/$phoneNumber'),
+        Uri.parse('http://$ipAddress:3001/api/records/$phoneNumber'),
         headers: {'Content-Type': 'application/json'},
       );
 
