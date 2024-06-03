@@ -41,43 +41,6 @@ class _LoginScreen extends State<LoginScreen> {
     }
   }
 
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse('http://10.0.2.2:3000/api/users/login'),
-  //       headers: <String, String>{
-  //         'Content-Type': 'application/json; charset=UTF-8',
-  //       },
-  //       body: jsonEncode(<String, String>{
-  //         'user_id': username,
-  //         'user_pw': password,
-  //       }),
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final responseBody = json.decode(response.body);
-  //       if (responseBody['loginSuccess']) {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('로그인 성공!')),
-  //         );
-  //         // 로그인 성공 시 다음 화면으로 이동 또는 다른 로직 추가
-  //         Navigator.pushNamed(context, '/main');
-  //       } else {
-  //         ScaffoldMessenger.of(context).showSnackBar(
-  //           SnackBar(content: Text('로그인 실패: ${responseBody['message']}')),
-  //         );
-  //       }
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('서버 오류: ${response.statusCode}')),
-  //       );
-  //     }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('네트워크 오류: $e')),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

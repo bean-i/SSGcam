@@ -29,10 +29,10 @@ import flutter_local_notifications
   ) -> Bool {
     // 추가: 오디오 세션 설정
     do {
-      try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+      try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
       try AVAudioSession.sharedInstance().setActive(true)
     } catch {
-      print("Failed to set audio session category: \(error)")
+      print("AVAudioSession 설정 오류: \(error)")
     }
     
     // iOS 10 이상일 경우 알림 센터 대리자 설정

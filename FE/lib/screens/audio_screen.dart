@@ -1,6 +1,10 @@
-import 'package:just_audio/just_audio.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
 
 var logger4 = Logger();
 
@@ -30,19 +34,51 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
 
   Future<void> _initializeAudio() async {
     try {
-      await _audioPlayer.setUrl(widget.audioUrl);
-      _audioPlayer.durationStream.listen((newDuration) {
-        setState(() {
-          duration = newDuration ?? Duration.zero;
+      final file = await _downloadFile(widget.audioUrl, 'audio.mp3');
+      if (file != null) {
+        await _audioPlayer.setSource(DeviceFileSource(file.path));
+        logger4.d("오디오 파일 설정 완료: ${file.path}");
+
+        _audioPlayer.onDurationChanged.listen((newDuration) {
+          setState(() {
+            duration = newDuration;
+          });
+          // logger4.d("오디오 길이: $duration");
         });
-      });
-      _audioPlayer.positionStream.listen((newPosition) {
-        setState(() {
-          position = newPosition;
+
+        _audioPlayer.onPositionChanged.listen((newPosition) {
+          setState(() {
+            position = newPosition;
+          });
+          // logger4.d("오디오 위치: $position");
         });
-      });
+
+        _audioPlayer.onPlayerStateChanged.listen((state) {
+          setState(() {
+            isPlaying = state == PlayerState.playing;
+          });
+        });
+      }
     } catch (e) {
       logger4.e("오디오 초기화 오류: $e");
+    }
+  }
+
+  Future<File?> _downloadFile(String url, String fileName) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final directory = await getApplicationDocumentsDirectory();
+        final file = File('${directory.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        return file;
+      } else {
+        logger4.e("파일 다운로드 오류: 상태 코드 ${response.statusCode}");
+        return null;
+      }
+    } catch (e) {
+      logger4.e("파일 다운로드 오류: $e");
+      return null;
     }
   }
 
@@ -56,11 +92,8 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
     if (isPlaying) {
       _audioPlayer.pause();
     } else {
-      _audioPlayer.play();
+      _audioPlayer.resume();
     }
-    setState(() {
-      isPlaying = !isPlaying;
-    });
   }
 
   String _formatDuration(Duration duration) {
@@ -76,9 +109,7 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 80,
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color(0xff202226),
         title: Text(
           widget.date,
@@ -124,7 +155,6 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
                     onChanged: (value) async {
                       final newPosition = Duration(seconds: value.toInt());
                       await _audioPlayer.seek(newPosition);
-                      await _audioPlayer.play();
                     },
                   ),
                   Row(
