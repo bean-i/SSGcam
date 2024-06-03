@@ -1,12 +1,14 @@
 import 'package:just_audio/just_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+
 var logger4 = Logger();
 
 class AudioPlayerPage extends StatefulWidget {
   final String audioUrl;
   final String date;
-  const AudioPlayerPage({super.key, required this.audioUrl, required this.date});
+  const AudioPlayerPage(
+      {super.key, required this.audioUrl, required this.date});
 
   @override
   _AudioPlayerPageState createState() => _AudioPlayerPageState();
@@ -18,13 +20,17 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
   Duration duration = Duration.zero;
   Duration position = Duration.zero;
 
-
   @override
   void initState() {
     super.initState();
     logger4.d("오디오 연결 : ${widget.audioUrl}");
     _audioPlayer = AudioPlayer();
-    _audioPlayer.setUrl(widget.audioUrl).then((_) {
+    _initializeAudio();
+  }
+
+  Future<void> _initializeAudio() async {
+    try {
+      await _audioPlayer.setUrl(widget.audioUrl);
       _audioPlayer.durationStream.listen((newDuration) {
         setState(() {
           duration = newDuration ?? Duration.zero;
@@ -35,7 +41,9 @@ class _AudioPlayerPageState extends State<AudioPlayerPage> {
           position = newPosition;
         });
       });
-    });
+    } catch (e) {
+      logger4.e("오디오 초기화 오류: $e");
+    }
   }
 
   @override

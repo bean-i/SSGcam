@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ssgcam/config.dart';
 
 class AuthService {
-  final String baseUrl = 'http://10.0.2.2:3000/api/users';
+  // final String baseUrl = 'http://10.0.2.2:3000/api/users';
+
+  // final String baseUrl = 'http://localhost:3001/api/users';
+  final String baseUrl = 'http://$ipAddress:3001/api/users';
 
   Future<bool> login(String userId, String password) async {
     final response = await http.post(
