@@ -23,7 +23,7 @@ class _RecordScreenState extends State<RecordScreen> {
     fetchRecords();
   }
 
-  //  탐지기록 가져오기
+  // 탐지 기록 가져오기
   Future<void> fetchRecords() async {
     final response =
         await http.get(Uri.parse('http://$ipAddress:3001/api/records'));
@@ -57,6 +57,7 @@ class _RecordScreenState extends State<RecordScreen> {
       ),
       body: Container(
         color: const Color(0xfff3f3f3),
+        padding: const EdgeInsets.all(24), // 화면 자체에 margin을 주기 위해 padding 사용
         child: records.isEmpty
             ? const Center(child: CircularProgressIndicator())
             : ListView.builder(
@@ -73,7 +74,7 @@ class _RecordScreenState extends State<RecordScreen> {
 class PhishingCard extends StatelessWidget {
   final dynamic item;
 
-  // 피해사례 등록
+  // 피해 사례 등록
   Future<void> registerFraudCase(BuildContext context) async {
     logger4.e("피해 사례 등록 시도");
     try {
@@ -174,127 +175,164 @@ class PhishingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(10),
-      elevation: 0,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _getDangerColor(item['rc_fd_level_str']),
-                      width: 5.0,
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16.0), // Card 사이에 마진 추가
+      child: Card(
+        elevation: 0,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          padding: const EdgeInsets.all(17), // Card 내부 패딩
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment
+                    .start, // Align the children to the start (top)
+                children: [
+                  // 왼쪽 컬럼
+                  Container(
+                    width: 77,
+                    height: 77,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: _getDangerColor(item['rc_fd_level_str']),
+                        width: 6.0,
+                      ),
                     ),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        item['rc_fd_level_str'],
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 10,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          item['rc_fd_level_str'],
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'PretendardSemiBold',
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
-                      Text(
-                        "${item['rc_fd_level']}%",
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: "${item['rc_fd_level']}",
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'PretendardBold',
+                                  fontSize: 23,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: "%",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'PretendardBold',
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item['rc_fd_num'],
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      item['rc_fd_category'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    _showAudioPlayer(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    elevation: 0,
-                    side: const BorderSide(
-                      color: Color(0xFF79c2f7),
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                      ],
                     ),
                   ),
-                  child: const Text(
-                    '통화 내용 듣기',
-                    style: TextStyle(
-                      color: Colors.black,
+                  const SizedBox(width: 10),
+                  // 오른쪽 컬럼
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item['rc_fd_num'],
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontFamily: 'PretendardSemiBold',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          item['rc_fd_category'],
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontFamily: 'PretendardRegular',
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              fit: FlexFit.tight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _showAudioPlayer(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                      vertical: 10.0), // 버튼 안의 패딩 설정
+                                  backgroundColor: Colors.white,
+                                  elevation: 0,
+                                  side: const BorderSide(
+                                    color: Color(0xFF79c2f7),
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                child: const Text(
+                                  '통화 내용 듣기',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Flexible(
+                              fit: FlexFit.tight,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // 피해 사례 DB 저장
+                                  registerFraudCase(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0,
+                                      vertical: 10.0), // 버튼 안의 패딩 설정
+                                  backgroundColor: const Color(0xFF79c2f7),
+                                  elevation: 0,
+                                  side: const BorderSide(
+                                    color: Color(0xFF79c2f7),
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
+                                  ),
+                                ),
+                                child: const Text(
+                                  '피해 사례 등록',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    // 피해 사례 DB 저장
-                    registerFraudCase(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF79c2f7),
-                    elevation: 0,
-                    side: const BorderSide(
-                      color: Color(0xFF79c2f7),
-                      width: 1.5,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  child: const Text(
-                    '피해 사례 등록',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 27),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
