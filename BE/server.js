@@ -43,7 +43,8 @@ const request = {
         languageCode: 'ko-KR',
         enableAutomaticPunctuation: true,
     },
-    interimResults: true
+    interimResults: true,
+    singleUtterance: false
 };
 
 let recognizeStream = null;
@@ -126,7 +127,7 @@ app.post("/", async (req, res) => {
     res.send(
       `<Response>
          <Start>
-           <Stream url='wss://c09e19f11a32.ngrok.app' />
+           <Stream url='wss://7056c16c724b.ngrok.app' />
          </Start>
          <Say>
            Hi Start speaking to see your audio transcribed in the console
