@@ -176,7 +176,7 @@ class PhishingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16.0), // Card 사이에 마진 추가
+      margin: const EdgeInsets.only(bottom: 10), // Card 사이에 마진 추가
       child: Card(
         elevation: 0,
         child: Container(
@@ -184,7 +184,12 @@ class PhishingCard extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
           ),
-          padding: const EdgeInsets.all(17), // Card 내부 패딩
+          padding: const EdgeInsets.only(
+            left: 17,
+            right: 17,
+            top: 15,
+            bottom: 12,
+          ), // Card 내부 패딩
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -205,13 +210,15 @@ class PhishingCard extends StatelessWidget {
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           item['rc_fd_level_str'],
                           style: const TextStyle(
                             color: Colors.black,
                             fontFamily: 'PretendardSemiBold',
-                            fontSize: 14,
+                            fontSize: 15,
+                            height: 1.0,
                           ),
                         ),
                         RichText(
@@ -222,7 +229,8 @@ class PhishingCard extends StatelessWidget {
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'PretendardBold',
-                                  fontSize: 23,
+                                  fontSize: 25,
+                                  height: 1.0,
                                 ),
                               ),
                               const TextSpan(
@@ -231,6 +239,7 @@ class PhishingCard extends StatelessWidget {
                                   color: Colors.black,
                                   fontFamily: 'PretendardBold',
                                   fontSize: 16,
+                                  height: 1.7,
                                 ),
                               ),
                             ],
@@ -252,7 +261,7 @@ class PhishingCard extends StatelessWidget {
                             fontFamily: 'PretendardSemiBold',
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 5),
                         Text(
                           item['rc_fd_category'],
                           style: const TextStyle(
@@ -260,7 +269,7 @@ class PhishingCard extends StatelessWidget {
                             fontFamily: 'PretendardRegular',
                           ),
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
