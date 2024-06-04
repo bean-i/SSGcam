@@ -6,10 +6,13 @@ import pandas as pd
 import os
 import logging
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
-model_path = '/Users/cindy/SSGcam/AI/Flask/models/deep voice detection model.keras'
+model_path = os.getenv('MODEL_PATH')
 model = tf.keras.models.load_model(model_path)
 
 def pad2d(a, i):
