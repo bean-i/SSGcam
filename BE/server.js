@@ -51,6 +51,45 @@ let recognizeStream = null;
 let text = [];
 let transcriptionCount = 0;
 
+// function setupRecognizeStream() {
+//     if (recognizeStream) {
+//         recognizeStream.end();
+//     }
+
+//     recognizeStream = speechClient.streamingRecognize(request)
+//         .on('error', error => {
+//             console.error('Speech-to-Text 에러:', error);
+//             setTimeout(setupRecognizeStream, 1000);
+//         })
+//         .on('data', async data => {
+//             const result = data.results[0];
+//             if (result && result.isFinal) {
+//                 const transcript = result.alternatives[0].transcript;
+//                 text.push(transcript);
+//                 transcriptionCount++;
+//                 console.log('Transcript:', transcript);
+
+//                 if (transcriptionCount >= 4) {
+//                     const fullText = text.join(' ');
+//                     const transcriptData = { text: fullText };
+//                     console.log('4문장이 완성되었습니다!', JSON.stringify(transcriptData, null, 2));
+
+//                     try {
+//                         await axios.post('http://192.168.0.2:4000/notify-event', {
+//                             title: 'Transcript Complete',
+//                             message: '4 sentences have been transcribed!'
+//                         });
+//                     } catch (error) {
+//                         console.error('Error sending notification:', error);
+//                     }
+
+//                     text = [];
+//                     transcriptionCount = 0;
+//                 }
+//             }
+//         });
+// }
+
 function setupRecognizeStream() {
     if (recognizeStream) {
         recognizeStream.end();
@@ -74,13 +113,20 @@ function setupRecognizeStream() {
                     const transcriptData = { text: fullText };
                     console.log('4문장이 완성되었습니다!', JSON.stringify(transcriptData, null, 2));
 
+                    // AI 서버에 데이터 전송 및 결과 처리
                     try {
-                        await axios.post('http://192.168.0.2:4000/notify-event', {
-                            title: 'Transcript Complete',
-                            message: '4 sentences have been transcribed!'
+                        const response = await axios.post('http://172.30.1.94:5000/predict/voicephishing', transcriptData, {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
                         });
+                        console.log('AI 서버에 데이터를 성공적으로 보냈습니다.');
+
+                        // AI 서버의 응답을 받아 플러터 앱에 알림 전송
+                        const responseData = response.data;
+                        await sendNotificationToFlutter(responseData);
                     } catch (error) {
-                        console.error('Error sending notification:', error);
+                        console.error('AI 서버에 데이터 전송 중 오류 발생:', error);
                     }
 
                     text = [];
@@ -89,6 +135,20 @@ function setupRecognizeStream() {
             }
         });
 }
+// 플러터 앱에 알림을 전송하는 함수
+async function sendNotificationToFlutter(data) {
+    try {
+        await axios.post('http://192.168.0.2:4000/notify-event', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        console.log('플러터 앱에 알림을 성공적으로 보냈습니다.');
+    } catch (error) {
+        console.error('플러터 앱에 알림 전송 중 오류 발생:', error);
+    }
+}
+
 
 wss.on('connection', async function connection(ws) {
     console.log("New Connection Initiated");
