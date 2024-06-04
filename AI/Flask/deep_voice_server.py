@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-model_path = '/Users/cindy/SSGcam/AI/Flask/models/deep voice detection model(0523).keras'
+model_path = '/Users/ibeen/SSGcam/AI/Flask/models/deep voice detection model(0523).keras'
 model = tf.keras.models.load_model(model_path)
 
 def pad2d(a, i):

@@ -124,7 +124,8 @@ function setupRecognizeStream() {
 
                         // AI 서버의 응답을 받아 플러터 앱에 알림 전송
                         const responseData = response.data;
-                        await sendNotificationToFlutter(responseData);
+                        const notificationMessage = `${responseData.probability} 확률로 ${responseData.voicephishing_class_results}으로 의심됩니다.`;
+                        await sendNotificationToFlutter(notificationMessage);
                     } catch (error) {
                         console.error('AI 서버에 데이터 전송 중 오류 발생:', error);
                     }
