@@ -3,16 +3,20 @@ import tensorflow as tf
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 model1 = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
 model2 = SentenceTransformer('jhgan/ko-sbert-sts')
 
-process1_model_v2_path = '/Users/cindy/SSGcam/AI/Flask/models/process 1 base v2.keras'
-process1_model_jhgan_path = '/Users/cindy/SSGcam/AI/Flask/models/process 1 jhgan.keras'
-process2_model_v2_path = '/Users/cindy/SSGcam/AI/Flask/models/process2 base v2.keras'
-process2_model_jhgan_path = '/Users/cindy/SSGcam/AI/Flask/models/process2 jhgan.keras'
+process1_model_v2_path = os.getenv('PROCESS1_MODEL_V2_PATH')
+process1_model_jhgan_path = os.getenv('PROCESS1_MODEL_JHGAN_PATH')
+process2_model_v2_path = os.getenv('PROCESS2_MODEL_V2_PATH')
+process2_model_jhgan_path = os.getenv('PROCESS2_MODEL_JHGAN_PATH')
 
 process1_model_v2 = tf.keras.models.load_model(process1_model_v2_path)
 process1_model_jhgan = tf.keras.models.load_model(process1_model_jhgan_path)
