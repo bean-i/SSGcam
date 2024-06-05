@@ -76,6 +76,42 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
+// 아이디 중복 확인
+  Future<void> _checkUsername() async {
+    String username = _usernameController.text;
+
+    var url = Uri.parse('http://$ipAddress:3001/api/users/checkUsername');
+
+    var response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'username': username,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(response.body);
+      if (jsonResponse['available']) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("사용 가능한 아이디입니다!"),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("이미 사용 중인 아이디입니다."),
+          ),
+        );
+      }
+    } else {
+      logger2.d('서버 오류: ${response.statusCode}');
+    }
+  }
+
 // 백엔드와 연결
   Future<void> _register() async {
     String name = _nameController.text;
@@ -110,10 +146,11 @@ class _SignupScreenState extends State<SignupScreen> {
             content: Text("회원가입에 성공했습니다!"),
           ),
         );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const MainScreen()),
+        // );
+        Navigator.pushNamed(context, '/permissions');
       } else {
         // 회원가입 실패 처리
         logger2.d("회원가입 실패: ${jsonResponse['message']}");
@@ -140,7 +177,7 @@ class _SignupScreenState extends State<SignupScreen> {
               _buildTextField('이름', '이름을 작성해 주세요.', _nameController),
               const SizedBox(height: 30),
               _buildTextField('아이디', '아이디를 작성해 주세요.', _usernameController,
-                  suffix: '중복 확인'),
+                  suffix: '중복 확인', onSuffixPressed: _checkUsername),
               const SizedBox(height: 30),
               _buildTextField('비밀번호', '비밀번호를 작성해 주세요.', _passwordController,
                   obscureText: true),
@@ -195,7 +232,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
   Widget _buildTextField(
       String label, String hint, TextEditingController controller,
-      {String? suffix, bool obscureText = false}) {
+      {String? suffix,
+      bool obscureText = false,
+      void Function()? onSuffixPressed}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -245,9 +284,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       padding:
                           const EdgeInsets.only(top: 6, bottom: 6, right: 6),
                       child: TextButton(
-                        onPressed: () {
-                          // 중복 확인 로직
-                        },
+                        onPressed: onSuffixPressed,
                         style: ButtonStyle(
                           backgroundColor:
                               WidgetStateProperty.all(const Color(0xFF549DEF)),

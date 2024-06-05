@@ -17,25 +17,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 플러그인 초기화
   logger.d("앱 시작");
 
-  // final AudioContext audioContext = AudioContext(
-  //   iOS: AudioContextIOS(
-  //     defaultToSpeaker: true,
-  //     category: AVAudioSessionCategory.ambient,
-  //     options: [
-  //       AVAudioSessionOptions.defaultToSpeaker,
-  //       AVAudioSessionOptions.mixWithOthers,
-  //     ],
-  //   ),
-  //   android: AudioContextAndroid(
-  //     isSpeakerphoneOn: true,
-  //     stayAwake: true,
-  //     contentType: AndroidContentType.sonification,
-  //     usageType: AndroidUsageType.assistanceSonification,
-  //     audioFocus: AndroidAudioFocus.none,
-  //   ),
-  // );
-  // AudioPlayer.global.setGlobalAudioContext(audioContext);
-
   // 알림 초기화 설정
   const DarwinInitializationSettings initializationSettingsIOS =
       DarwinInitializationSettings();

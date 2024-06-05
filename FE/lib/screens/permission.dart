@@ -134,6 +134,7 @@ class PermissionScreen extends StatelessWidget {
                           notificationStatus.isGranted) {
                         // 권한이 모두 허용된 경우
                         logger3.d("권한이 모두 허용됨");
+                        Navigator.pushNamed(context, '/main');
                       } else {
                         // 하나 또는 두 권한 모두 거부된 경우
                         logger3.d("권한이 거부됨");

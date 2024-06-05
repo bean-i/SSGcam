@@ -115,6 +115,24 @@ app.get('/api/users/logout', auth, async (req, res) =>{
   }
 });
 
+// 아이디 중복 확인
+app.post('/api/users/checkUsername', (req, res) => {
+  const { username } = req.body;
+
+  User.findOne({ user_id: username })
+    .then(user => {
+      if (user) {
+        return res.status(200).json({ available: false });
+      } else {
+        return res.status(200).json({ available: true });
+      }
+    })
+    .catch(err => {
+      console.error('Error checking username:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    });
+});
+
 
 
 
@@ -122,11 +140,7 @@ app.get('/api/users/logout', auth, async (req, res) =>{
 const Record = require('./models/Record');
 const conn = mongoose.connection;
 let gfsBucket;
-// conn.once('open', () => {
-//   gfs = Grid(conn.db, mongoose.mongo);
-//   gfs.collection('uploads');
-//   console.log('GridFS initialized');
-// });
+
 conn.once('open', () => {
   gfsBucket = new GridFSBucket(conn.db, { bucketName: 'uploads' });
   console.log('GridFSBucket initialized');
@@ -134,8 +148,16 @@ conn.once('open', () => {
 
 app.get('/api/records', async (req, res) => {
   console.log('탐지기록 가져오기 시도');
+
+  const userId = req.query.userId;
+  console.log('로그인된 아이디 : ',userId);
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'userId가 필요합니다.' });
+  }
+
+
   try{
-    const records = await Record.find();
+    const records = await Record.find({ rc_user_id: userId });
     console.log('탐지기록 가져오기 성공');
     res.status(200).json(records);
   }catch (err) {

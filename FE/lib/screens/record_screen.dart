@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'audio_screen.dart';
 import 'package:ssgcam/config.dart';
 
@@ -25,8 +26,16 @@ class _RecordScreenState extends State<RecordScreen> {
 
   // 탐지 기록 가져오기
   Future<void> fetchRecords() async {
-    final response =
-        await http.get(Uri.parse('http://$ipAddress:3001/api/records'));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? userId = prefs.getString('userId'); // 저장된 userId 가져오기
+
+    if (userId == null) {
+      logger4.e('UserId가 없습니다.');
+      return;
+    }
+
+    final response = await http
+        .get(Uri.parse('http://$ipAddress:3001/api/records?userId=$userId'));
     if (response.statusCode == 200) {
       setState(() {
         records = json.decode(response.body);
@@ -59,7 +68,8 @@ class _RecordScreenState extends State<RecordScreen> {
         color: const Color(0xfff3f3f3),
         padding: const EdgeInsets.all(24), // 화면 자체에 margin을 주기 위해 padding 사용
         child: records.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: Text('탐지기록이 없습니다', style: TextStyle(fontSize: 18)))
             : ListView.builder(
                 itemCount: records.length,
                 itemBuilder: (context, index) {

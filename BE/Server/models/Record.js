@@ -7,7 +7,7 @@ const recordSchema = new Schema({
         type: ObjectId,
         required: true,
         unique: true,
-        default: () => new mongoose.Types.ObjectId()
+        // default: () => new mongoose.Types.ObjectId()
     },
     rc_fd_num: {
         type: String,

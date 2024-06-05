@@ -41,9 +41,10 @@ const insertRecord = async () => {
 
       // 레코드 생성 및 저장
       const newRecord = new Record({
-        rc_fd_num: '010-1010-1012',
+        rc_user_id: '664de1470fc95dd030c902d5',
+        rc_fd_num: '010-1111-4444',
         rc_fd_category: '기타',
-        rc_fd_level: 18,
+        rc_fd_level: 66,
         rc_audio_file: writestream.id, // GridFS 파일 ID 사용
       });
 

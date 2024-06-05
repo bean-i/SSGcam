@@ -21,6 +21,17 @@
                 <key>NSRequiresCertificateTransparency</key>
                 <false/>
             </dict>
+            <key>127.0.0.1</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+                <key>NSRequiresCertificateTransparency</key>
+                <false/>
+            </dict>
         </dict>
     </dict>
     <key>NSUserNotificationUsageDescription</key>

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'dart:convert';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,9 +26,13 @@ class _LoginScreen extends State<LoginScreen> {
     }
 
     final AuthService authService = AuthService();
-    bool loginSuccess = await authService.login(username, password);
+    Map<String, dynamic>? loginResponse =
+        await authService.login(username, password);
 
-    if (loginSuccess) {
+    if (loginResponse != null && loginResponse['loginSuccess'] == true) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userId', loginResponse['userId']); // userId 저장
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('로그인 성공!')),
       );
@@ -137,10 +139,10 @@ class _LoginScreen extends State<LoginScreen> {
                   onPressed: () => _login(context),
                   style: ButtonStyle(
                     backgroundColor:
-                        WidgetStateProperty.all(const Color(0xFF549DEF)),
-                    minimumSize: WidgetStateProperty.all(const Size(120, 50)),
-                    elevation: WidgetStateProperty.all(0),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                        MaterialStateProperty.all(const Color(0xFF549DEF)),
+                    minimumSize: MaterialStateProperty.all(const Size(120, 50)),
+                    elevation: MaterialStateProperty.all(0),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     )),
                   ),
@@ -180,7 +182,7 @@ class _LoginScreen extends State<LoginScreen> {
                   const SizedBox(width: 15),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/permissions');
+                      // Navigator.pushNamed(context, '/permissions');
                     },
                     child: const Text(
                       '비밀번호 찾기',
