@@ -1,4 +1,4 @@
-process.env.GOOGLE_APPLICATION_CREDENTIALS = '/Users/ibeen/SSGcam/BE/ssgcam-e621d56cd3c1.json';
+process.env.GOOGLE_APPLICATION_CREDENTIALS = '';
 require('dotenv').config(); // dotenv를 사용해 환경 변수 로드
 const express = require('express');
 const { Server: HttpServer } = require('http');
