@@ -18,10 +18,6 @@ const server = new HttpServer(app);
 const wss = new WebSocket.Server({ server });
 const speechClient = new SpeechClient();
 
-const accountSid = 'ACcbba44d426fa93be3633feceea031ca9'; 
-const authToken = 'e69917add2fe0cd4489bb11685ee6242';
-const client = twilio(accountSid, authToken);
-
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 ffmpeg.setFfprobePath(ffprobeInstaller.path);
 
@@ -50,45 +46,6 @@ const request = {
 let recognizeStream = null;
 let text = [];
 let transcriptionCount = 0;
-
-// function setupRecognizeStream() {
-//     if (recognizeStream) {
-//         recognizeStream.end();
-//     }
-
-//     recognizeStream = speechClient.streamingRecognize(request)
-//         .on('error', error => {
-//             console.error('Speech-to-Text 에러:', error);
-//             setTimeout(setupRecognizeStream, 1000);
-//         })
-//         .on('data', async data => {
-//             const result = data.results[0];
-//             if (result && result.isFinal) {
-//                 const transcript = result.alternatives[0].transcript;
-//                 text.push(transcript);
-//                 transcriptionCount++;
-//                 console.log('Transcript:', transcript);
-
-//                 if (transcriptionCount >= 4) {
-//                     const fullText = text.join(' ');
-//                     const transcriptData = { text: fullText };
-//                     console.log('4문장이 완성되었습니다!', JSON.stringify(transcriptData, null, 2));
-
-//                     try {
-//                         await axios.post('http://192.168.0.2:4000/notify-event', {
-//                             title: 'Transcript Complete',
-//                             message: '4 sentences have been transcribed!'
-//                         });
-//                     } catch (error) {
-//                         console.error('Error sending notification:', error);
-//                     }
-
-//                     text = [];
-//                     transcriptionCount = 0;
-//                 }
-//             }
-//         });
-// }
 
 function setupRecognizeStream() {
     if (recognizeStream) {
