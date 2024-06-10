@@ -142,7 +142,7 @@
   </tr>
   <tr>
     <td><img src="https://via.placeholder.com/150" style="width: 100%;"></td>
-    <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/39b90df2-4a2f-4595-9451-a7534c70cf02" style="width: 100%;"></td>
+    <td><img src="https://github.com/bean-i/SSGcam/assets/94227598/71bb6079-2d77-471f-bb5e-b8e262cb194a" style="width: 100%;"></td>
     <td><img src="https://via.placeholder.com/150" style="width: 100%;"></td>
     <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/280c1e8f-6e48-4cac-907e-ede6931ba4a9" style="width: 100%;"></td>
   </tr>
