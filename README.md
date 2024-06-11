@@ -158,10 +158,10 @@
 ## 7 ) 👥👥 팀원
 <table>
   <tr>
-    <th>김강민</th>
-    <th>김민정</th>
-    <th>소유진</th>
-    <th>이빈</th>
+    <th><strong>김강민</strong></th>
+    <th><strong>김민정</strong></th>
+    <th><strong>소유진</strong></th>
+    <th><strong>이빈</strong></th>
   </tr>
   <tr>
     <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/4883dd25-54d0-4fad-a534-5e9cbf951e6b" style="width: 100%;"></td>
@@ -170,9 +170,9 @@
     <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/280c1e8f-6e48-4cac-907e-ede6931ba4a9" style="width: 100%;"></td>
   </tr>
   <tr>
-    <td>AI 개발</td>
-    <td>백엔드<br>데이터베이스 설계</td>
-    <td>프론트엔드<br>백엔드</td>
-    <td>프론트엔드<br>백엔드</td>
+    <td><strong>🦾 AI</strong></td>
+    <td><strong>📂 데이터베이스</strong><br><strong>⚙️ 백엔드</strong></td>
+    <td><strong>📱 프론트엔드</strong><br><strong>⚙️ 백엔드</strong></td>
+    <td><strong>📱 프론트엔드</strong><br><strong>⚙️ 백엔드</strong></td>
   </tr>
 </table>
