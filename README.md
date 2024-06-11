@@ -21,8 +21,8 @@
    - [시스템 아키텍처](#시스템-아키텍처)
    - [인포메이션 아키텍처](#인포메이션-아키텍처)
 6. [🦾 모델](#6---모델)
-   - [보이스피싱 탐지](#보이스피싱-탐지)
-   - [딥보이스 탐지](#딥보이스-탐지)
+   - [보이스피싱 탐지](#-보이스피싱-탐지)
+   - [딥보이스 탐지](#-딥보이스-탐지)
 7. [👥👥 팀원](#7---팀원)
 
 ## 1 ) 💡 개요
@@ -128,9 +128,32 @@
 <img src="https://github.com/bean-i/SSGcam/assets/86592841/98036b9e-bf9d-4a7f-8c68-680d6336bb38" style="width: 80%;">
 
 ## 6 ) 🦾 모델
-### 보이스피싱 탐지
+### 📌 보이스피싱 탐지
+#### 🗒️ 데이터
 
-### 딥보이스 탐지
+보이스피싱 데이터 : 금융감독원 '그놈 목소리' + '바로 이 목소리'  
+
+일반 데이터 : AI Hub 민원(콜센터) 질의-응답 데이터
+
+#### 🦾 모델링
+##### Process 1) 보이스피싱 유무 탐지
+
+<img width="50%" alt="image" src="https://github.com/bean-i/SSGcam/assets/86592841/8c12ef0b-e392-47a5-969e-d23098d2a3cb">
+
+##### Process 2) 보이스피싱 유형 탐지
+
+<img width="50%" alt="image" src="https://github.com/bean-i/SSGcam/assets/86592841/8a57c596-4669-4378-87e7-87a7e559fec0">
+
+### 📌 딥보이스 탐지
+#### 🗒️ 데이터
+
+딥보이스 데이터 : AI Hub 다화자 음성 합성 데이터
+
+일반 보이스 데이터 : AI Hub 자유 대화 음성 데이터
+
+#### 🦾 모델링
+
+<img width="60%" alt="image" src="https://github.com/bean-i/SSGcam/assets/86592841/eaed6273-2223-4cd7-9a1c-6fa0b4e8e8ba">
 
 ## 7 ) 👥👥 팀원
 <table>
@@ -141,9 +164,9 @@
     <th>이빈</th>
   </tr>
   <tr>
-    <td><img src="https://via.placeholder.com/150" style="width: 100%;"></td>
+    <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/4883dd25-54d0-4fad-a534-5e9cbf951e6b" style="width: 100%;"></td>
     <td><img src="https://github.com/bean-i/SSGcam/assets/94227598/71bb6079-2d77-471f-bb5e-b8e262cb194a" style="width: 100%;"></td>
-    <td><img src="https://via.placeholder.com/150" style="width: 100%;"></td>
+    <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/35f284cd-f147-44d7-a1df-a3a81dfb8e10" style="width: 100%;"></td>
     <td><img src="https://github.com/bean-i/SSGcam/assets/86592841/280c1e8f-6e48-4cac-907e-ede6931ba4a9" style="width: 100%;"></td>
   </tr>
   <tr>
